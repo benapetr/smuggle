@@ -1,0 +1,35 @@
+#!/bin/sh
+
+DEST=/
+
+if [ "$#" -gt 0 ];then
+  if [ x"$1" != x"" ];then
+    DEST=$1/
+  fi
+fi
+
+if [ ! -f huggle ];then
+  echo "FATAL: You need to build huggle first"
+  exit 1
+fi
+
+echo "Installing huggle to $DEST"
+if [ ! -d "$DEST"usr/bin ];then
+  mkdir -p "$DEST"usr/bin
+fi
+if [ ! -d "$DEST"usr/share/man/man1 ];then
+  mkdir -p "$DEST"usr/share/man/man1
+fi
+cp -v huggle "$DEST"usr/bin/huggle || exit 1
+cp -v man/huggle.1 "$DEST"usr/share/man/man1 || exit 1
+gzip "$DEST"usr/share/man/man1/huggle.1 || exit 1
+if [ ! -d "$DEST"usr/share/huggle ];then
+  mkdir "$DEST"usr/share/huggle || exit 1
+fi
+if [ ! -d "$DEST"usr/share/applications ];then
+  mkdir "$DEST"usr/share/applications || exit 1
+fi
+cp -v Resources/huggle3_newlogo.png "$DEST"usr/share/huggle || exit 1
+cp -v build/huggle.desktop "$DEST"usr/share/applications || exit 1
+
+echo "Installed"
