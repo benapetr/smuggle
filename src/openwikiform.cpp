@@ -47,8 +47,8 @@ void OpenWikiForm::on_pushButton_clicked()
         Generic::MessageBox("Invalid datafile", "Datafile not found");
         return;
     }
-    QString name = this->ui->lineEdit->text();
-    QString url = this->ui->lineEdit_2->text().trimmed().toLower();
+    QString name = this->ui->lineEdit_4->text();
+    QString url = this->ui->lineEdit->text().trimmed().toLower();
     // check if there isn't already wiki with this name
     foreach (WikiSite *site, WikiSite::Sites)
     {
@@ -61,10 +61,14 @@ void OpenWikiForm::on_pushButton_clicked()
         url = url.mid(8);
     if (url.startsWith("http://"))
         url = url.mid(7);
-    WikiSite *site = new WikiSite(datafile, name, url);
-    if (this->ui->checkBox->isChecked())
-    {
-
-    }
-
+    new WikiSite(datafile, name, url);
+    QString ssl = "0";
+    if (this->ui->checkBox_2->isChecked())
+        ssl = "1";
+    // insert wiki to datafile
+    if (!datafile->ExecuteNonQuery("insert into wiki (name, url, uw, uapis, ssl) values ('" +
+                              name + "', '" + url + "', '" +
+                              this->ui->lineEdit_2->text() + "', '" +
+                              this->ui->lineEdit_3->text() + "', " + ssl + ");\nCOMMIT;"))
+        Generic::MessageBox("Error", "Failed to execute query: " + datafile->LastError);
 }

@@ -24,3 +24,8 @@ WikiList::~WikiList()
 {
     delete this->ui;
 }
+
+void WikiList::Refresh()
+{
+
+}

@@ -15,6 +15,8 @@
 
 #include <QMainWindow>
 
+class QTimer;
+
 namespace Ui
 {
     class MainWindow;
@@ -23,20 +25,25 @@ namespace Ui
 namespace Smuggle
 {
     class SwLog;
+    class WikiList;
     class MainWindow : public QMainWindow
     {
             Q_OBJECT
         public:
             explicit MainWindow(QWidget *parent = 0);
             ~MainWindow();
+            void RefreshWiki();
         private slots:
             void on_actionOpen_datafile_triggered();
             void on_actionExit_triggered();
             void on_actionManage_wikis_triggered();
             void on_actionUpdate_content_triggered();
             void on_actionCreate_wiki_triggered();
+            void OnLogs();
         private:
             SwLog *fLogs;
+            WikiList *fWL;
+            QTimer *loop;
             Ui::MainWindow *ui;
     };
 }

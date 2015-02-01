@@ -28,7 +28,7 @@ namespace Smuggle
         public:
             explicit WikiList(QWidget *parent = 0);
             ~WikiList();
-
+            void Refresh();
         private:
             Ui::WikiList *ui;
     };

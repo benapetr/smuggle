@@ -57,7 +57,36 @@ void Core::Init()
 
 void Core::LoadWikisFromDB(SwSql *file)
 {
+    SqlResult *result = file->ExecuteQuery("SELECT * FROM wiki;");
+    int x = 0;
+    QString error;
+    if (result->InError)
+    {
+        error = "Unable to read from " + file->GetPath();
+        goto error_exit;
+    }
+    if (result->GetColumns() != 6)
+    {
+        error = "Wrong number of columns in wiki table";
+        goto error_exit;
+    }
+    while (x < result->Count())
+    {
+        SwRow row = result->GetRow(x++);
+        WikiSite *site = new WikiSite(file, row.GetField(1).toString(),
+                                      row.GetField(2).toString(),
+                                      row.GetField(3).toString(),
+                                      row.GetField(4).toString(), false, false, "", "", "", false);
+        site->HANChannel = "";
+    }
 
+    delete result;
+    return;
+
+    error_exit:
+        Syslog::Logs->ErrorLog(error);
+        delete result;
+        return;
 }
 
 

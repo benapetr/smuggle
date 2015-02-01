@@ -14,11 +14,40 @@
 #define SWSQL_HPP
 
 #include <QList>
+#include <QVariant>
 #include <QString>
 #include "sqlite3.h"
 
 namespace Smuggle
 {
+    class SwRow
+    {
+        public:
+            SwRow(QList<QVariant> rx);
+            ~SwRow();
+            QVariant GetField(unsigned int column);
+            int Columns();
+        private:
+            QList<QVariant> data;
+    };
+
+    class SwSql;
+
+    class SqlResult
+    {
+        public:
+            SqlResult();
+            ~SqlResult();
+            int GetColumns();
+            SwRow GetRow(unsigned int rowid);
+            int Count();
+            bool InError;
+        private:
+            QList<SwRow> Rows;
+            int columns;
+            friend class SwSql;
+    };
+
     class SwSql
     {
         public:
@@ -31,6 +60,7 @@ namespace Smuggle
             QString GetPath();
             bool ExecuteNonQueryLineByLine(QString sql);
             bool ExecuteNonQuery(QString sql);
+            SqlResult *ExecuteQuery(QString sql);
             sqlite3 *db;
             QString LastError;
         private:

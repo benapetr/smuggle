@@ -15,8 +15,12 @@
 #include "mainwindow.hpp"
 #include "openwikiform.hpp"
 #include "ui_mainwindow.h"
+#include "wikilist.hpp"
+#include "wikisite.hpp"
 #include "swordlog.hpp"
 #include "syslog.hpp"
+#include <QMutex>
+#include <QTimer>
 
 using namespace Smuggle;
 
@@ -24,13 +28,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     this->ui->setupUi(this);
     this->fLogs = new SwLog(this);
+    this->fWL = new WikiList(this);
     this->addDockWidget(Qt::BottomDockWidgetArea, this->fLogs);
-
+    this->addDockWidget(Qt::LeftDockWidgetArea, this->fWL);
+    this->loop = new QTimer(this);
+    connect(this->loop, SIGNAL(timeout()), this, SLOT(OnLogs()));
+    this->loop->start(200);
 }
 
 MainWindow::~MainWindow()
 {
+    delete this->fLogs;
+    delete this->fWL;
     delete this->ui;
+}
+
+void MainWindow::RefreshWiki()
+{
+
 }
 
 void Smuggle::MainWindow::on_actionOpen_datafile_triggered()
@@ -58,4 +73,21 @@ void Smuggle::MainWindow::on_actionCreate_wiki_triggered()
     OpenWikiForm *form = new OpenWikiForm(this);
     form->setAttribute(Qt::WA_DeleteOnClose);
     form->show();
+}
+
+void MainWindow::OnLogs()
+{
+    Syslog::Logs->lUnwrittenLogs->lock();
+    if (Syslog::Logs->UnwrittenLogs.count() > 0)
+    {
+        int c = 0;
+        while (c < Syslog::Logs->UnwrittenLogs.count())
+        {
+            this->fLogs->InsertText(Syslog::Logs->UnwrittenLogs.at(c));
+            c++;
+        }
+        Syslog::Logs->UnwrittenLogs.clear();
+    }
+    Syslog::Logs->lUnwrittenLogs->unlock();
+    this->fLogs->Render();
 }

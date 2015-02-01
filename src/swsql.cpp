@@ -14,6 +14,7 @@
 #include "exception.hpp"
 #include "syslog.hpp"
 #include <QFile>
+#include <string.h>
 
 using namespace Smuggle;
 
@@ -83,9 +84,66 @@ bool SwSql::ExecuteNonQuery(QString sql)
     sqlite3_stmt *statement;
     int x = sqlite3_prepare_v2(this->db, sql.toUtf8().constData(), sql.length() + 1, &statement, NULL);
     if (!this->Evaluate(x))
+    {
+        sqlite3_finalize(statement);
         return false;
+    }
     x = sqlite3_step(statement);
+    sqlite3_finalize(statement);
     return this->Evaluate(x);
+}
+
+static QString StringFromUnsignedChar( const unsigned char *str )
+{
+    std::string temp = std::string(reinterpret_cast<const char*>(str));
+    return QString(temp.c_str());
+}
+
+SqlResult *SwSql::ExecuteQuery(QString sql)
+{
+    SqlResult *result = new SqlResult();
+    sqlite3_stmt *statement;
+    int x = sqlite3_prepare_v2(this->db, sql.toUtf8().constData(), sql.length() + 1, &statement, NULL);
+    if (!this->Evaluate(x))
+    {
+        sqlite3_finalize(statement);
+        result->InError = true;
+        return result;
+    }
+    x = sqlite3_step(statement);
+    while (x == SQLITE_ROW)
+    {
+        int column_count = sqlite3_column_count(statement);
+        QList<QVariant> row;
+        int value = 0;
+        while (value < column_count)
+        {
+            int t = sqlite3_column_type(statement, value);
+            switch (t)
+            {
+                case SQLITE_INTEGER:
+                    row.append(QVariant(sqlite3_column_int(statement, value)));
+                    break;
+                case SQLITE_FLOAT:
+                    row.append(QVariant(sqlite3_column_double(statement, value)));
+                    break;
+                case SQLITE_TEXT:
+                    row.append(QVariant(StringFromUnsignedChar(sqlite3_column_text(statement, value))));
+                    break;
+                default:
+                    throw new Exception("Unknown data type: " + QString::number(t));
+            }
+            value++;
+        }
+        x = sqlite3_step(statement);
+        result->columns = column_count;
+        result->Rows.append(SwRow(row));
+    }
+    if (!this->Evaluate(x))
+        result->InError = true;
+
+    sqlite3_finalize(statement);
+    return result;
 }
 
 bool SwSql::Evaluate(int data)
@@ -93,10 +151,65 @@ bool SwSql::Evaluate(int data)
     switch (data)
     {
         case SQLITE_OK:
-            return true;
+        case SQLITE_ROW:
         case SQLITE_DONE:
             return true;
     }
     Syslog::Logs->ErrorLog("Unknown result");
     return false;
+}
+
+SqlResult::SqlResult()
+{
+    this->InError = false;
+}
+
+SqlResult::~SqlResult()
+{
+
+}
+
+int SqlResult::GetColumns()
+{
+    return this->columns;
+}
+
+SwRow SqlResult::GetRow(unsigned int rowid)
+{
+    if (rowid >= (unsigned int)this->Rows.count())
+        throw new Exception("Too large");
+
+
+    return this->Rows.at(rowid);
+}
+
+int SqlResult::Count()
+{
+    return this->Rows.count();
+}
+
+SwRow::SwRow(QList<QVariant> rx)
+{
+    this->data = rx;
+}
+
+SwRow::~SwRow()
+{
+
+}
+
+QVariant SwRow::GetField(unsigned int column)
+{
+    if (column >= (unsigned int)this->data.count())
+    {
+        // there is no such column in here
+        throw new Smuggle::Exception("Invalid column");
+    }
+
+    return this->data.at(column);
+}
+
+int SwRow::Columns()
+{
+    return this->data.count();
 }

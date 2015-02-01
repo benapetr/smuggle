@@ -104,6 +104,7 @@ WikiSite::WikiSite(SwSql *df, QString name, QString url)
     this->Datafile = df;
     this->SupportOAuth = true;
     this->IRCChannel = "#test.wikipedia";
+    this->IsRightToLeft = false;
     this->WhiteList = "test.wikipedia";
     Sites.append(this);
 }
