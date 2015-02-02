@@ -16,7 +16,7 @@
 #include <QList>
 #include <QVariant>
 #include <QString>
-#include "sqlite3.h"
+#include "sqlite/sqlite3.h"
 
 namespace Smuggle
 {

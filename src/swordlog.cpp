@@ -17,7 +17,7 @@
 #include "localization.hpp"
 #include "exception.hpp"
 #include "syslog.hpp"
-#include "ui_hugglelog.h"
+#include "ui_logs.h"
 
 using namespace Smuggle;
 
