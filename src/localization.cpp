@@ -15,8 +15,8 @@
 #include <QFile>
 #include "exception.hpp"
 #include "configuration.hpp"
-//#include "generic.hpp"
-//#include "syslog.hpp"
+#include "generic.hpp"
+#include "syslog.hpp"
 
 using namespace Smuggle;
 unsigned int Localizations::EnglishID = 0;
@@ -55,7 +55,7 @@ Language *Localizations::MakeLanguageUsingXML(QString text, QString name)
         QString n_ = item.attribute("name");
         if (n_ == "isrtl")
         {
-            //l->IsRTL = Generic::SafeBool(item.text());
+            l->IsRTL = Generic::SafeBool(item.text());
             continue;
         }
         if (l->Messages.contains(n_))
@@ -78,13 +78,13 @@ Language *Localizations::MakeLanguageUsingXML(QString text, QString name)
 
 void Localizations::LocalInit(QString name, bool xml)
 {
-    /*QFile *f;
+    QFile *f;
     if (name == "en")
     {
         // we need to remember ID of this language
         Localizations::EnglishID = this->LocalizationData.count();
     }
-    if (Configuration::SystemConfig_SafeMode)
+    /*if (Configuration::SystemConfig_SafeMode)
     {
         // we don't want to load custom files in safe mode
         f = new QFile(":/huggle/text/Localization/" + name + ".xml");

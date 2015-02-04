@@ -14,6 +14,7 @@
 #include "swsql.hpp"
 #include "generic.hpp"
 #include "wikisite.hpp"
+#include "mainwindow.hpp"
 #include "ui_openwikiform.h"
 
 using namespace Smuggle;
@@ -55,6 +56,7 @@ void OpenWikiForm::on_pushButton_clicked()
         if (site->Datafile == datafile && site->Name == name)
         {
             Generic::pMessageBox(this, "Error", "You already have a wiki with this name in this datafile");
+            return;
         }
     }
     if (url.startsWith("https://"))
@@ -69,6 +71,11 @@ void OpenWikiForm::on_pushButton_clicked()
     if (!datafile->ExecuteNonQuery("insert into wiki (name, url, uw, uapis, ssl) values ('" +
                               name + "', '" + url + "', '" +
                               this->ui->lineEdit_2->text() + "', '" +
-                              this->ui->lineEdit_3->text() + "', " + ssl + ");\nCOMMIT;"))
+                              this->ui->lineEdit_3->text() + "', " + ssl + ");"))
+    {
         Generic::MessageBox("Error", "Failed to execute query: " + datafile->LastError);
+        return;
+    }
+    MainWindow::Window->RefreshWiki();
+    this->close();
 }

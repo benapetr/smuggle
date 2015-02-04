@@ -20,9 +20,10 @@ namespace Smuggle
     class Exception
     {
         public:
-            Exception(QString Text);
+            Exception(QString Text, QString Source = "");
             ~Exception();
         private:
+            QString function_name;
             QString text;
     };
 }

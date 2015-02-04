@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>827</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -40,7 +40,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuWiki">
+    <property name="title">
+     <string>Wiki</string>
+    </property>
+    <addaction name="actionImport_pages"/>
+    <addaction name="actionUpdate_meta_information"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuWiki"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -80,6 +88,16 @@
   <action name="actionOpen_datafile">
    <property name="text">
     <string>Open datafile</string>
+   </property>
+  </action>
+  <action name="actionImport_pages">
+   <property name="text">
+    <string>Import pages</string>
+   </property>
+  </action>
+  <action name="actionUpdate_meta_information">
+   <property name="text">
+    <string>Update meta information</string>
    </property>
   </action>
  </widget>

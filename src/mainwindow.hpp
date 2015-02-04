@@ -25,14 +25,19 @@ namespace Ui
 namespace Smuggle
 {
     class SwLog;
+    class WebBrowser;
+    class WikiSite;
     class WikiList;
     class MainWindow : public QMainWindow
     {
             Q_OBJECT
         public:
+            static MainWindow *Window;
+
             explicit MainWindow(QWidget *parent = 0);
             ~MainWindow();
             void RefreshWiki();
+            WikiSite *CurrentSite;
         private slots:
             void on_actionOpen_datafile_triggered();
             void on_actionExit_triggered();
@@ -40,9 +45,12 @@ namespace Smuggle
             void on_actionUpdate_content_triggered();
             void on_actionCreate_wiki_triggered();
             void OnLogs();
+            void on_actionImport_pages_triggered();
+            void on_actionUpdate_meta_information_triggered();
         private:
             SwLog *fLogs;
             WikiList *fWL;
+            WebBrowser *fWeb;
             QTimer *loop;
             Ui::MainWindow *ui;
     };

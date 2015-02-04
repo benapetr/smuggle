@@ -11,6 +11,8 @@
 // Copyright (c) Petr Bena 2015
 
 #include "wikilist.hpp"
+#include "wikisite.hpp"
+#include "mainwindow.hpp"
 #include "ui_wikilist.h"
 
 using namespace Smuggle;
@@ -27,5 +29,22 @@ WikiList::~WikiList()
 
 void WikiList::Refresh()
 {
+    this->ui->comboBox->clear();
+    foreach (WikiSite *xx, WikiSite::Sites)
+        this->ui->comboBox->addItem(xx->Name);
+    this->ui->comboBox->setCurrentIndex(0);
+    this->SelectWiki(0);
+}
 
+void WikiList::SelectWiki(int in)
+{
+    if (!WikiSite::Sites.count())
+        return;
+
+    MainWindow::Window->CurrentSite = WikiSite::Sites.at(in);
+}
+
+void Smuggle::WikiList::on_comboBox_currentIndexChanged(int index)
+{
+    this->SelectWiki(index);
 }

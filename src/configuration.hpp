@@ -17,11 +17,19 @@
 
 namespace Smuggle
 {
+    class WikiSite;
+
     class Configuration
     {
         public:
             static QString GetLocalDBPath();
-
+            //! Return a full url like http://en.wikipedia.org/wiki/
+            static QString GetProjectWikiURL(WikiSite *Project);
+            //! Return a script url like http://en.wikipedia.org/w/
+            static QString GetProjectScriptURL(WikiSite *Project);
+            static QString GetProjectURL(WikiSite *Project);
+            //! Return a prefix for url
+            static QString GetURLProtocolPrefix(WikiSite *s = NULL);
             static bool SystemConfig_SafeMode;
             static QString HomePath;
             static QString Version;

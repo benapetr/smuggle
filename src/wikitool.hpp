@@ -10,20 +10,18 @@
 
 // Copyright (c) Petr Bena 2015
 
-#include "core.hpp"
-#include "mainwindow.hpp"
-#include <QApplication>
+#ifndef WIKITOOL_HPP
+#define WIKITOOL_HPP
 
-using namespace Smuggle;
+#include <QString>
+#include "wikisite.hpp"
 
-int main(int argc, char *argv[])
+namespace Smuggle
 {
-    QApplication::setApplicationName("Smuggle");
-    QApplication::setOrganizationName("Wikimedia");
-    QApplication a(argc, argv);
-    Core::Init();
-    Smuggle::MainWindow w;
-    w.show();
-
-    return a.exec();
+    namespace WikiTool
+    {
+        void UpdateMeta(WikiSite *wiki);
+    }
 }
+
+#endif // WIKITOOL_HPP

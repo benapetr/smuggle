@@ -12,10 +12,14 @@
 
 #include "core.hpp"
 #include "configuration.hpp"
+#include "query.hpp"
 #include "swsql.hpp"
 #include "syslog.hpp"
 #include "wikisite.hpp"
+#include "gc.hpp"
+#include "sleeper.hpp"
 #include <QApplication>
+#include <QNetworkAccessManager>
 #include <QDesktopServices>
 #include <QDir>
 
@@ -27,6 +31,14 @@ void Core::Shutdown()
         delete WikiSite::Sites.at(0);
     while (SwSql::Datafiles.count() > 0)
         delete SwSql::Datafiles.at(0);
+    Query::NetworkManager->deleteLater();
+    GC::gc->Stop();
+    Syslog::Logs->Log("SHUTDOWN: waiting for garbage collector to finish");
+    while(GC::gc->IsRunning())
+        Sleeper::usleep(200);
+    // last garbage removal
+    GC::gc->DeleteOld();
+    delete GC::gc;
     QApplication::exit();
 }
 
@@ -37,6 +49,8 @@ void Core::Init()
 #else
     Configuration::HomePath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
+
+    GC::gc = new GC();
 
     if (!QDir().exists(Configuration::GetLocalDBPath()))
     {
@@ -52,6 +66,9 @@ void Core::Init()
         SwSql::Default = new SwSql(Configuration::GetLocalDBPath() + "default.db");
     foreach(SwSql *file, SwSql::Datafiles)
         Core::LoadWikisFromDB(file);
+
+    Query::NetworkManager = new QNetworkAccessManager();
+
     Syslog::Logs->Log("Welcome to Smuggle! :)");
 }
 
@@ -65,6 +82,8 @@ void Core::LoadWikisFromDB(SwSql *file)
         error = "Unable to read from " + file->GetPath();
         goto error_exit;
     }
+    if (result->Count() == 0)
+        return;
     if (result->GetColumns() != 6)
     {
         error = "Wrong number of columns in wiki table";
@@ -77,7 +96,7 @@ void Core::LoadWikisFromDB(SwSql *file)
                                       row.GetField(2).toString(),
                                       row.GetField(3).toString(),
                                       row.GetField(4).toString(), false, false, "", "", "", false);
-        site->HANChannel = "";
+        site->ID = row.GetField(0).toInt();
     }
 
     delete result;

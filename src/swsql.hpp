@@ -58,7 +58,7 @@ namespace Smuggle
             SwSql(QString path);
             ~SwSql();
             QString GetPath();
-            bool ExecuteNonQueryLineByLine(QString sql);
+            qint64 LastRow();
             bool ExecuteNonQuery(QString sql);
             SqlResult *ExecuteQuery(QString sql);
             sqlite3 *db;

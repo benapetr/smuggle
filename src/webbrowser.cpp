@@ -10,20 +10,17 @@
 
 // Copyright (c) Petr Bena 2015
 
-#include "core.hpp"
-#include "mainwindow.hpp"
-#include <QApplication>
+#include "webbrowser.hpp"
+#include "ui_webbrowser.h"
 
 using namespace Smuggle;
 
-int main(int argc, char *argv[])
+WebBrowser::WebBrowser(QWidget *parent) : QWidget(parent), ui(new Ui::WebBrowser)
 {
-    QApplication::setApplicationName("Smuggle");
-    QApplication::setOrganizationName("Wikimedia");
-    QApplication a(argc, argv);
-    Core::Init();
-    Smuggle::MainWindow w;
-    w.show();
+    this->ui->setupUi(this);
+}
 
-    return a.exec();
+WebBrowser::~WebBrowser()
+{
+    delete this->ui;
 }

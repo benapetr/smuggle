@@ -11,6 +11,7 @@
 // Copyright (c) Petr Bena 2015
 
 #include "configuration.hpp"
+#include "wikisite.hpp"
 
 using namespace Smuggle;
 
@@ -22,4 +23,29 @@ QString Configuration::HomePath;
 QString Configuration::GetLocalDBPath()
 {
     return Configuration::HomePath + "/" + "db/";
+}
+
+QString Configuration::GetURLProtocolPrefix(WikiSite *s)
+{
+    if (s && !s->SupportHttps)
+        return "http://";
+
+    return "https://";
+}
+
+QString Configuration::GetProjectURL(WikiSite *Project)
+{
+    if (!Project->URL.endsWith("/"))
+        return Configuration::GetURLProtocolPrefix() + Project->URL + "/";
+    return Configuration::GetURLProtocolPrefix() + Project->URL;
+}
+
+QString Configuration::GetProjectWikiURL(WikiSite *Project)
+{
+    return Configuration::GetProjectURL(Project) + Project->LongPath;
+}
+
+QString Configuration::GetProjectScriptURL(WikiSite *Project)
+{
+    return Configuration::GetProjectURL(Project) + Project->ScriptPath;
 }

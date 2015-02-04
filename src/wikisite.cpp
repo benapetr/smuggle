@@ -68,6 +68,7 @@ WikiSite::WikiSite(const WikiSite &w)
     this->URL = w.URL;
     this->HANChannel = w.HANChannel;
     this->IsRightToLeft = w.IsRightToLeft;
+    this->IsInitialized = w.IsInitialized;
     this->Unknown = w.Unknown;
     this->WhiteList = w.WhiteList;
 }
@@ -88,6 +89,7 @@ WikiSite::WikiSite(WikiSite *w)
     this->IsRightToLeft = w->IsRightToLeft;
     this->Datafile = w->Datafile;
     this->Unknown = w->Unknown;
+    this->IsInitialized = w->IsInitialized;
     this->SupportOAuth = w->SupportOAuth;
     this->SupportHttps = w->SupportHttps;
     this->ScriptPath = w->ScriptPath;
@@ -101,6 +103,7 @@ WikiSite::WikiSite(SwSql *df, QString name, QString url)
     this->ScriptPath = "w/";
     this->OAuthURL = url + "w/index.php?title=Special:MWOAuth";
     this->SupportHttps = true;
+    this->IsInitialized = false;
     this->Datafile = df;
     this->SupportOAuth = true;
     this->IRCChannel = "#test.wikipedia";
@@ -119,6 +122,7 @@ WikiSite::WikiSite(SwSql *df, QString name, QString url, QString path, QString s
     this->OAuthURL = url + "w/index.php?title=Special:MWOAuth";
     this->ScriptPath = script;
     this->Datafile = df;
+    this->IsInitialized = false;
     this->URL = url;
     this->IsRightToLeft = isrtl;
     this->SupportOAuth = oauth;

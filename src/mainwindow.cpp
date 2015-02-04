@@ -12,11 +12,15 @@
 
 #include "configuration.hpp"
 #include "core.hpp"
+#include "generic.hpp"
+#include "importpages.hpp"
 #include "mainwindow.hpp"
 #include "openwikiform.hpp"
 #include "ui_mainwindow.h"
+#include "webbrowser.hpp"
 #include "wikilist.hpp"
 #include "wikisite.hpp"
+#include "wikitool.hpp"
 #include "swordlog.hpp"
 #include "syslog.hpp"
 #include <QMutex>
@@ -24,15 +28,22 @@
 
 using namespace Smuggle;
 
+MainWindow *MainWindow::Window;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     this->ui->setupUi(this);
     this->fLogs = new SwLog(this);
+    this->fWeb = new WebBrowser(this);
     this->fWL = new WikiList(this);
     this->addDockWidget(Qt::BottomDockWidgetArea, this->fLogs);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->fWL);
+    this->setCentralWidget(this->fWeb);
+    this->CurrentSite = NULL;
     this->loop = new QTimer(this);
+    Window = this;
     connect(this->loop, SIGNAL(timeout()), this, SLOT(OnLogs()));
+    this->RefreshWiki();
     this->loop->start(200);
 }
 
@@ -45,7 +56,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::RefreshWiki()
 {
-
+    this->fWL->Refresh();
 }
 
 void Smuggle::MainWindow::on_actionOpen_datafile_triggered()
@@ -90,4 +101,21 @@ void MainWindow::OnLogs()
     }
     Syslog::Logs->lUnwrittenLogs->unlock();
     this->fLogs->Render();
+}
+
+void Smuggle::MainWindow::on_actionImport_pages_triggered()
+{
+    if (this->CurrentSite == NULL)
+    {
+        Generic::pMessageBox(this, "No wiki", "No wiki is currently selected in list of wikis");
+        return;
+    }
+    ImportPages *p_wn = new ImportPages(this, CurrentSite);
+    p_wn->setAttribute(Qt::WA_DeleteOnClose);
+    p_wn->show();
+}
+
+void Smuggle::MainWindow::on_actionUpdate_meta_information_triggered()
+{
+    WikiTool::UpdateMeta(this->CurrentSite);
 }

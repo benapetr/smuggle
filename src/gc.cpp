@@ -22,7 +22,7 @@ GC *GC::gc = NULL;
 GC::GC()
 {
     this->Lock = new QMutex(QMutex::Recursive);
-#ifdef HUGGLE_USE_MT_GC
+#ifdef SMUGGLE_USE_MT_GC
     this->gc_t = new GC_t();
     // this is a background task
     this->gc_t->start(QThread::LowestPriority);

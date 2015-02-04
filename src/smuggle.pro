@@ -38,7 +38,11 @@ SOURCES += main.cpp\
     aboutform.cpp \
     openwikiform.cpp \
     wikilist.cpp \
-    generic.cpp
+    generic.cpp \
+    importpages.cpp \
+    wikitool.cpp \
+    sleeper.cpp \
+    webbrowser.cpp
 
 HEADERS  += mainwindow.hpp \
     configuration.hpp \
@@ -66,13 +70,19 @@ HEADERS  += mainwindow.hpp \
     aboutform.hpp \
     openwikiform.hpp \
     wikilist.hpp \
-    generic.hpp
+    generic.hpp \
+    importpages.hpp \
+    wikitool.hpp \
+    sleeper.hpp \
+    webbrowser.hpp
 
 FORMS    += mainwindow.ui \
     logs.ui \
     aboutform.ui \
     openwikiform.ui \
-    wikilist.ui
+    wikilist.ui \
+    importpages.ui \
+    webbrowser.ui
 
 LIBS += -ldl
 

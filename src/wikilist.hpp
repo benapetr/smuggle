@@ -29,6 +29,10 @@ namespace Smuggle
             explicit WikiList(QWidget *parent = 0);
             ~WikiList();
             void Refresh();
+            void SelectWiki(int in);
+        private slots:
+            void on_comboBox_currentIndexChanged(int index);
+
         private:
             Ui::WikiList *ui;
     };

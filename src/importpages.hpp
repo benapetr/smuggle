@@ -10,20 +10,35 @@
 
 // Copyright (c) Petr Bena 2015
 
-#include "core.hpp"
-#include "mainwindow.hpp"
-#include <QApplication>
+#ifndef IMPORTPAGES_HPP
+#define IMPORTPAGES_HPP
 
-using namespace Smuggle;
+#include <QDialog>
 
-int main(int argc, char *argv[])
+namespace Ui
 {
-    QApplication::setApplicationName("Smuggle");
-    QApplication::setOrganizationName("Wikimedia");
-    QApplication a(argc, argv);
-    Core::Init();
-    Smuggle::MainWindow w;
-    w.show();
-
-    return a.exec();
+    class ImportPages;
 }
+
+namespace Smuggle
+{
+    class WikiSite;
+
+    class ImportPages : public QDialog
+    {
+            Q_OBJECT
+
+        public:
+            explicit ImportPages(QWidget *parent = 0, WikiSite *ws = NULL);
+            ~ImportPages();
+
+        private slots:
+            void on_pushButton_2_clicked();
+
+        private:
+            WikiSite *site;
+            Ui::ImportPages *ui;
+    };
+}
+
+#endif // IMPORTPAGES_HPP

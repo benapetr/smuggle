@@ -45,9 +45,13 @@ SwSql::SwSql(QString path)
         Syslog::Logs->ErrorLog("Unable to open " + this->file + " error code " + QString::number(rc));
         return;
     }
-    if (init && !this->ExecuteNonQueryLineByLine(GetSQL("init.sql")))
+    if (init)
     {
-        Syslog::Logs->ErrorLog("Failed to initialize " + this->file);
+        Syslog::Logs->Log("Initializing " + this->file);
+        if(!this->ExecuteNonQuery(GetSQL("init.sql")))
+        {
+            Syslog::Logs->ErrorLog("Failed to initialize " + this->file);
+        }
     }
 }
 
@@ -62,35 +66,21 @@ QString SwSql::GetPath()
     return this->file;
 }
 
-bool SwSql::ExecuteNonQueryLineByLine(QString sql)
+qint64 SwSql::LastRow()
 {
-    QStringList lines = sql.split('\n');
-    while (lines.count())
-    {
-        if (lines.at(0).trimmed().startsWith("--"))
-            goto next;
-        if (lines.at(0).trimmed().isEmpty())
-            goto next;
-        if (!this->ExecuteNonQuery(lines.at(0)))
-            return false;
-        next:
-        lines.removeAt(0);
-    }
-    return true;
+    return sqlite3_last_insert_rowid(this->db);
 }
 
 bool SwSql::ExecuteNonQuery(QString sql)
 {
-    sqlite3_stmt *statement;
-    int x = sqlite3_prepare_v2(this->db, sql.toUtf8().constData(), sql.length() + 1, &statement, NULL);
+    char *error;
+    int x = sqlite3_exec(this->db, sql.toUtf8().constData(), NULL, NULL, &error);
     if (!this->Evaluate(x))
     {
-        sqlite3_finalize(statement);
+        this->LastError = QString(error);
         return false;
     }
-    x = sqlite3_step(statement);
-    sqlite3_finalize(statement);
-    return this->Evaluate(x);
+    return true;
 }
 
 static QString StringFromUnsignedChar( const unsigned char *str )
@@ -161,6 +151,7 @@ bool SwSql::Evaluate(int data)
 
 SqlResult::SqlResult()
 {
+    this->columns = 0;
     this->InError = false;
 }
 

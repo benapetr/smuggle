@@ -22,15 +22,12 @@ using namespace Smuggle;
 
 void ApiQuery::ConstructUrl()
 {
-    //if (this->ActionPart.isEmpty())
-    //    throw new Huggle::Exception("No action provided for api request", BOOST_CURRENT_FUNCTION);
+    if (this->ActionPart.isEmpty())
+        throw new Smuggle::Exception("No action provided for api request", BOOST_CURRENT_FUNCTION);
     if (this->OverrideWiki.isEmpty())
-    {
-    //    this->URL = Configuration::GetProjectScriptURL(this->GetSite()) + "api.php?action=" + this->ActionPart;
-    } else
-    {
-    //    this->URL = Configuration::GetURLProtocolPrefix(this->GetSite()) + this->OverrideWiki + "api.php?action=" + this->ActionPart;
-    }
+        this->URL = Configuration::GetProjectScriptURL(this->GetSite()) + "api.php?action=" + this->ActionPart;
+    else
+        this->URL = Configuration::GetURLProtocolPrefix(this->GetSite()) + this->OverrideWiki + "api.php?action=" + this->ActionPart;
     if (this->Parameters.length() > 0)
         this->URL += "&" + this->Parameters;
     if (this->IsContinuous)
@@ -55,12 +52,12 @@ QString ApiQuery::ConstructParameterLessUrl()
     QString url;
     if (this->ActionPart.isEmpty())
     {
-    //    throw new Huggle::Exception("No action provided for api request", BOOST_CURRENT_FUNCTION);
+        throw new Smuggle::Exception("No action provided for api request", BOOST_CURRENT_FUNCTION);
     }
-   // if (!this->OverrideWiki.size())
-   //     url = Configuration::GetProjectScriptURL(this->GetSite()) + "api.php?action=" + this->ActionPart;
-   // else
-   //     url = Configuration::GetURLProtocolPrefix(this->GetSite()) + this->OverrideWiki + "api.php?action=" + this->ActionPart;
+    if (!this->OverrideWiki.size())
+        url = Configuration::GetProjectScriptURL(this->GetSite()) + "api.php?action=" + this->ActionPart;
+    else
+        url = Configuration::GetURLProtocolPrefix(this->GetSite()) + this->OverrideWiki + "api.php?action=" + this->ActionPart;
     if (this->IsContinuous)
         url += "&rawcontinue=1";
     switch (this->RequestFormat)
@@ -170,7 +167,7 @@ void ApiQuery::Process()
         url = QUrl::fromEncoded(this->URL.toUtf8());
     }
     QNetworkRequest request(url);
-    //request.setRawHeader("User-Agent", Configuration::HuggleConfiguration->WebqueryAgent);
+    request.setRawHeader("User-Agent", "smuggle");
     if (this->UsingPOST)
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     if (this->UsingPOST)

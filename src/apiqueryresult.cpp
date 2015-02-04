@@ -9,6 +9,7 @@
 //GNU Lesser General Public License for more details.
 
 // Copyright (c) Petr Bena 2015
+
 #include "apiqueryresult.hpp"
 #include "configuration.hpp"
 #include "exception.hpp"

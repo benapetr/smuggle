@@ -120,7 +120,7 @@ void Query::ProcessCallback()
 {
     if (this->callback != NULL)
     {
-        //this->RegisterConsumer(HUGGLECONSUMER_CALLBACK);
+        this->IncRef();
         this->callback(this);
     }
 }
@@ -129,7 +129,7 @@ void Query::ProcessFailure()
 {
     if (this->FailureCallback != NULL)
     {
-        //this->RegisterConsumer(HUGGLECONSUMER_CALLBACK);
+        this->IncRef();
         this->FailureCallback(this);
     }
 }
