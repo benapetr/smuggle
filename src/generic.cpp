@@ -95,3 +95,9 @@ int Generic::pMessageBox(QWidget *parent, QString title, QString text, MessageBo
 {
     return Generic::MessageBox(title, text, st, enforce_stop, parent);
 }
+
+
+bool Generic::SafeBool(int value)
+{
+    return value != 0;
+}

@@ -25,3 +25,7 @@ Exception::~Exception()
 
 }
 
+NullPointerException::NullPointerException(QString Text, QString Source) : Exception(Text, Source)
+{
+
+}

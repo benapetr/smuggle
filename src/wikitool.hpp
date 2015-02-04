@@ -21,6 +21,7 @@ namespace Smuggle
     namespace WikiTool
     {
         void UpdateMeta(WikiSite *wiki);
+        void DownloadPageFromTitle(WikiSite *wiki, QString title);
     }
 }
 

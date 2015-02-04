@@ -54,6 +54,7 @@ namespace Smuggle
             static QList<SwSql*> Datafiles;
             static SwSql* Default;
             static QString GetSQL(QString name);
+            static QString Escape(QString input);
 
             SwSql(QString path);
             ~SwSql();
@@ -61,7 +62,9 @@ namespace Smuggle
             qint64 LastRow();
             bool ExecuteNonQuery(QString sql);
             SqlResult *ExecuteQuery(QString sql);
+            SqlResult *ExecuteQuery_Bind(QString sql, QStringList parameter);
             sqlite3 *db;
+            QString LastStatement;
             QString LastError;
         private:
             bool Evaluate(int data);

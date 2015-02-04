@@ -47,7 +47,10 @@ namespace Smuggle
             void OnLogs();
             void on_actionImport_pages_triggered();
             void on_actionUpdate_meta_information_triggered();
+            void on_actionDelete_wiki_triggered();
+
         private:
+            void Quit();
             SwLog *fLogs;
             WikiList *fWL;
             WebBrowser *fWeb;

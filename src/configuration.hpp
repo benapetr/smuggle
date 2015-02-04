@@ -28,6 +28,7 @@ namespace Smuggle
             //! Return a script url like http://en.wikipedia.org/w/
             static QString GetProjectScriptURL(WikiSite *Project);
             static QString GetProjectURL(WikiSite *Project);
+            static QString GetConfigurationPath();
             //! Return a prefix for url
             static QString GetURLProtocolPrefix(WikiSite *s = NULL);
             static bool SystemConfig_SafeMode;

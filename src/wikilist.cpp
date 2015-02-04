@@ -13,6 +13,8 @@
 #include "wikilist.hpp"
 #include "wikisite.hpp"
 #include "mainwindow.hpp"
+#include "swsql.hpp"
+#include "generic.hpp"
 #include "ui_wikilist.h"
 
 using namespace Smuggle;
@@ -41,10 +43,33 @@ void WikiList::SelectWiki(int in)
     if (!WikiSite::Sites.count())
         return;
 
-    MainWindow::Window->CurrentSite = WikiSite::Sites.at(in);
+    WikiSite *site = WikiSite::Sites.at(in);
+    MainWindow::Window->CurrentSite = site;
+    this->ui->tableWidget->clear();
+    // get a list of all pages
+    SqlResult *sql = site->Datafile->ExecuteQuery("SELECT name FROM page WHERE wiki = " + QString::number(site->ID) + " AND "\
+                                                  "deleted != 0;");
+    if (sql->InError)
+    {
+        Generic::MessageBox("Error", "Unable to retrieve list of pages: " + site->Datafile->LastError);
+        delete sql;
+        return;
+    }
+    int p = 0;
+    while (p < sql->Count())
+    {
+        SwRow row = sql->GetRow(p++);
+        int last = this->ui->tableWidget->rowCount();
+        this->ui->tableWidget->insertRow(last);
+        this->ui->tableWidget->setItem(last, 0, new QTableWidgetItem(row.GetField(0).toString()));
+    }
+
+    delete sql;
 }
 
 void Smuggle::WikiList::on_comboBox_currentIndexChanged(int index)
 {
+    if (index < 0)
+        return;
     this->SelectWiki(index);
 }

@@ -16,6 +16,7 @@
 #include "swsql.hpp"
 #include "syslog.hpp"
 #include "wikisite.hpp"
+#include "generic.hpp"
 #include "gc.hpp"
 #include "sleeper.hpp"
 #include <QApplication>
@@ -74,7 +75,7 @@ void Core::Init()
 
 void Core::LoadWikisFromDB(SwSql *file)
 {
-    SqlResult *result = file->ExecuteQuery("SELECT * FROM wiki;");
+    SqlResult *result = file->ExecuteQuery("SELECT id, name, url, uw, uapis, ssl, wiki_init FROM wiki;");
     int x = 0;
     QString error;
     if (result->InError)
@@ -83,8 +84,8 @@ void Core::LoadWikisFromDB(SwSql *file)
         goto error_exit;
     }
     if (result->Count() == 0)
-        return;
-    if (result->GetColumns() != 6)
+        goto exit;
+    if (result->GetColumns() != 7)
     {
         error = "Wrong number of columns in wiki table";
         goto error_exit;
@@ -97,15 +98,48 @@ void Core::LoadWikisFromDB(SwSql *file)
                                       row.GetField(3).toString(),
                                       row.GetField(4).toString(), false, false, "", "", "", false);
         site->ID = row.GetField(0).toInt();
+        site->SupportHttps = Generic::SafeBool(row.GetField(5).toInt());
+        site->IsInitialized = Generic::SafeBool(row.GetField(6).toInt());
+        if (site->IsInitialized)
+        {
+            // get namespaces
+            SqlResult *ns = file->ExecuteQuery("SELECT namespace_id, name, canonical FROM namespaces WHERE wiki = " +
+                                               QString::number(site->ID) + ";");
+            if (ns->InError)
+            {
+                Syslog::Logs->ErrorLog("Unable to read namespace information for " + site->Name + " " + file->LastError);
+                delete ns;
+                continue;
+            }
+            if (ns->Count() < 1)
+            {
+                delete ns;
+                continue;
+            }
+            if (ns->GetColumns() != 3)
+            {
+                delete ns;
+                Syslog::Logs->ErrorLog("Unable to read namespace information for " + site->Name + " wrong number of columns");
+                continue;
+            }
+            int ns_id = 0;
+            while (ns_id < ns->Count())
+            {
+                SwRow ns_info = ns->GetRow(ns_id++);
+                site->InsertNS(new WikiPageNS(ns_info.GetField(0).toInt(),
+                                              ns_info.GetField(1).toString(),
+                                              ns_info.GetField(2).toString()));
+            }
+            delete ns;
+        }
     }
 
-    delete result;
-    return;
+    goto exit;
 
     error_exit:
         Syslog::Logs->ErrorLog(error);
+    exit:
         delete result;
-        return;
 }
 
 

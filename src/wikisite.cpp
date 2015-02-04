@@ -136,6 +136,15 @@ WikiSite::~WikiSite()
     this->ClearNS();
 }
 
+int WikiSite::LastNS()
+{
+    if (this->NamespaceList.isEmpty())
+        return -1;
+    QList<int> ns = this->NamespaceList.keys();
+    qSort(ns);
+    return ns.last();
+}
+
 WikiPageNS *WikiSite::RetrieveNSFromTitle(QString title)
 {
     WikiPageNS *dns_ = NULL;

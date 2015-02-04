@@ -9,7 +9,8 @@ CREATE TABLE wiki
     "uw" NULL NOT NULL,
     "uapis" TEXT NOT NULL,
     "ssl" NUMERIC NOT NULL,
-    "wiki_init" NUMERIC NOT NULL
+    "wiki_init" NUMERIC NOT NULL,
+    "time_init" NUMERIC
 );
 
 CREATE INDEX idx_wiki_name ON wiki(name);
@@ -17,20 +18,21 @@ CREATE INDEX idx_wiki_name ON wiki(name);
 CREATE TABLE revision
 (
     "id" INTEGER PRIMARY KEY,
-    "rev_id" INTEGER,
-    "rev_page" INTEGER,
-    "rev_text_id" INTEGER,
-    "rev_comment" TEXT,
-    "rev_user_text" TEXT,
-    "rev_timestamp" INTEGER,
-    "rev_minor_edit" INTEGER,
-    "rev_deleted" INTEGER,
-    "rev_len" INTEGER,
-    "rev_parent_id" INTEGER,
+    "rev_id" INTEGER NOT NULL,
+    "rev_page" INTEGER NOT NULL,
+    "rev_text_id" INTEGER NOT NULL,
+    "rev_comment" TEXT NOT NULL,
+    "rev_user_text" TEXT NOT NULL,
+    "rev_timestamp" INTEGER NOT NULL,
+    "rev_minor_edit" INTEGER NOT NULL,
+    "rev_deleted" INTEGER NOT NULL,
+    "rev_len" INTEGER NOT NULL,
+    "rev_parent_id" INTEGER NOT NULL,
     "rev_sha1" TEXT,
     "rev_content_model" TEXT,
     "rev_content_format" TEXT,
-    "rev_wiki" INTEGER
+    "wiki" INTEGER,
+    "downloaded" INTEGER
 );
 
 CREATE INDEX idx_revision_rev_id ON revision(rev_id);
@@ -38,22 +40,30 @@ CREATE INDEX idx_revision_rev_id ON revision(rev_id);
 CREATE TABLE text
 (
     "id" INTEGER PRIMARY KEY,
-    "text" TEXT,
-    "html" TEXT
+    "wiki" INTEGER NOT NULL,
+    "text" TEXT NOT NULL,
+    "html" TEXT NOT NULL
 );
+
+CREATE INDEX idx_text_wiki ON text(wiki);
 
 CREATE TABLE page
 (
     "id" INTEGER PRIMARY KEY,
-    "name" TEXT,
+    "name" TEXT UNIQUE NOT NULL,
     "preferred_rev_id" NUMERIC,
-    "last_rev_id" NUMERIC,
-    "namespace" NUMERIC,
+    "latest" NUMERIC,
+    "content_model" TEXT,
+    "lang" TEXT,
+    "namespace" NUMERIC NOT NULL,
     "last_edited" NUMERIC,
     "last_updated" NUMERIC,
-    "wiki" NUMERIC,
+    "wiki" NUMERIC NOT NULL,
     "deleted" NUMERIC,
-    "downloaded" NUMERIC,
+    "downloaded" NUMERIC NOT NULL,
+    "counter" NUMERIC,
+    "is_redirect" NUMERIC,
+    "is_new" NUMERIC,
     "current_revision" NUMERIC,
     "last_revision" NUMERIC
 );
@@ -66,10 +76,11 @@ CREATE INDEX idx_page_namespace ON page(namespace);
 CREATE TABLE namespaces
 (
     "id" INTEGER PRIMARY KEY,
-    "wiki" NUMERIC,
-    "namespace_id" NUMERIC,
-    "name" TEXT,
-    "is_talk" NUMERIC
+    "wiki" NUMERIC NOT NULL,
+    "namespace_id" NUMERIC NOT NULL,
+    "name" TEXT NOT NULL,
+    "canonical" TEXT NOT NULL,
+    "is_talk" NUMERIC NOT NULL
 );
 
 CREATE TABLE metadata

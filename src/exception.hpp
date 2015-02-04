@@ -26,6 +26,12 @@ namespace Smuggle
             QString function_name;
             QString text;
     };
+
+    class NullPointerException : public Exception
+    {
+        public:
+            NullPointerException(QString Text, QString Source = "");
+    };
 }
 
 #endif // EXCEPTION_H

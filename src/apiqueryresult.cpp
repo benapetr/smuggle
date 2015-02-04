@@ -13,6 +13,7 @@
 #include "apiqueryresult.hpp"
 #include "configuration.hpp"
 #include "exception.hpp"
+#include "syslog.hpp"
 #include <QtXml>
 
 using namespace Smuggle;
@@ -51,8 +52,8 @@ static void ProcessChildXMLNodes(ApiQueryResult *result, QDomNodeList nodes)
                 attr++;
                 if (!node->Attributes.contains(ca.name()))
                     node->Attributes.insert(ca.name(), ca.value());
-                //else
-                    //Syslog::HuggleLogs->WarningLog("Invalid xml node (present multiple times) " + ca.name() + " in " + element.tagName());
+                else
+                    Syslog::Logs->WarningLog("Invalid xml node (present multiple times) " + ca.name() + " in " + element.tagName());
             }
             result->Nodes.append(node);
             if (element.childNodes().count())
@@ -86,10 +87,10 @@ static void ProcessChildXMLNodes(ApiQueryResult *result, QDomNodeList nodes)
 
 void ApiQueryResult::Process()
 {
-    //if (this->Data.isEmpty())
-    //    throw new Huggle::Exception("There is no data to be processed", BOOST_CURRENT_FUNCTION);
-    //if (this->IsFailed())
-    //    throw new Huggle::Exception("Not processing a failed result", BOOST_CURRENT_FUNCTION);
+    if (this->Data.isEmpty())
+        throw new Smuggle::Exception("There is no data to be processed", BOOST_CURRENT_FUNCTION);
+    if (this->IsFailed())
+        throw new Smuggle::Exception("Not processing a failed result", BOOST_CURRENT_FUNCTION);
 
     QDomDocument result;
     result.setContent(this->Data);

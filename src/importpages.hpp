@@ -14,11 +14,15 @@
 #define IMPORTPAGES_HPP
 
 #include <QDialog>
+#include <QHash>
+#include "wikipage.hpp"
 
 namespace Ui
 {
     class ImportPages;
 }
+
+class QCheckBox;
 
 namespace Smuggle
 {
@@ -31,12 +35,20 @@ namespace Smuggle
         public:
             explicit ImportPages(QWidget *parent = 0, WikiSite *ws = NULL);
             ~ImportPages();
-
+            void InsertPage(WikiPage page, bool present);
+            void FinishLoad();
+            int LastNS;
+            QString LastTitle;
+            WikiSite *site;
+            int Limit;
+            QList<WikiPage> Pages;
+            QHash<QString, QCheckBox*> CheckBoxes;
         private slots:
             void on_pushButton_2_clicked();
+            void on_pushButton_3_clicked();
 
         private:
-            WikiSite *site;
+            void Enable(bool value);
             Ui::ImportPages *ui;
     };
 }

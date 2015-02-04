@@ -34,6 +34,11 @@ QString SwSql::GetSQL(QString name)
     return d;
 }
 
+QString SwSql::Escape(QString input)
+{
+    return input.replace("'", "''");
+}
+
 SwSql::SwSql(QString path)
 {
     this->file = path;
@@ -74,6 +79,7 @@ qint64 SwSql::LastRow()
 bool SwSql::ExecuteNonQuery(QString sql)
 {
     char *error;
+    this->LastStatement = sql;
     int x = sqlite3_exec(this->db, sql.toUtf8().constData(), NULL, NULL, &error);
     if (!this->Evaluate(x))
     {
@@ -91,14 +97,23 @@ static QString StringFromUnsignedChar( const unsigned char *str )
 
 SqlResult *SwSql::ExecuteQuery(QString sql)
 {
+    return this->ExecuteQuery_Bind(sql, QStringList());
+}
+
+SqlResult *SwSql::ExecuteQuery_Bind(QString sql, QStringList parameter)
+{
     SqlResult *result = new SqlResult();
     sqlite3_stmt *statement;
+    int current_parameter = 1;
+    this->LastStatement = sql;
     int x = sqlite3_prepare_v2(this->db, sql.toUtf8().constData(), sql.length() + 1, &statement, NULL);
     if (!this->Evaluate(x))
+        goto on_error;
+    foreach (QString text, parameter)
     {
-        sqlite3_finalize(statement);
-        result->InError = true;
-        return result;
+        x = sqlite3_bind_text(statement, current_parameter++, text.toUtf8().constData(), -1, SQLITE_STATIC);
+        if (!this->Evaluate(x))
+            goto on_error;
     }
     x = sqlite3_step(statement);
     while (x == SQLITE_ROW)
@@ -129,11 +144,18 @@ SqlResult *SwSql::ExecuteQuery(QString sql)
         result->columns = column_count;
         result->Rows.append(SwRow(row));
     }
+
     if (!this->Evaluate(x))
-        result->InError = true;
+        goto on_error;
 
     sqlite3_finalize(statement);
     return result;
+
+    on_error:
+        sqlite3_finalize(statement);
+        this->LastError = QString(sqlite3_errmsg(this->db));
+        result->InError = true;
+        return result;
 }
 
 bool SwSql::Evaluate(int data)
@@ -144,6 +166,8 @@ bool SwSql::Evaluate(int data)
         case SQLITE_ROW:
         case SQLITE_DONE:
             return true;
+        case SQLITE_ERROR:
+            return false;
     }
     Syslog::Logs->ErrorLog("Unknown result");
     return false;

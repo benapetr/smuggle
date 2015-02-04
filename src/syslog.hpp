@@ -23,10 +23,10 @@
 // when we aren't in debug mode, this saves some CPU resources as these calls are very expensive sometimes (lot of conversions
 // of numbers and text)
 //! Sends a debug to system (text of a log, verbosity)
-#define HUGGLE_DEBUG(debug, verbosity) if (Huggle::Configuration::HuggleConfiguration->Verbosity >= verbosity) \
-                                           Syslog::HuggleLogs->DebugLog(debug, verbosity)
-#define HUGGLE_DEBUG1(debug) if (Huggle::Configuration::HuggleConfiguration->Verbosity >= 1) \
-                                           Syslog::HuggleLogs->DebugLog(debug, 1)
+#define DEBUG(debug, verbosity) if (Smuggle::Configuration::Verbosity >= verbosity) \
+                                           Syslog::Logs->DebugLog(debug, verbosity)
+#define DEBUG1(debug) if (Smuggle::Configuration::Verbosity >= 1) \
+                                           Syslog::Logs->DebugLog(debug, 1)
 
 class QMutex;
 

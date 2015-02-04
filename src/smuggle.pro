@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     importpages.cpp \
     wikitool.cpp \
     sleeper.cpp \
-    webbrowser.cpp
+    webbrowser.cpp \
+    wikipage.cpp
 
 HEADERS  += mainwindow.hpp \
     configuration.hpp \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.hpp \
     importpages.hpp \
     wikitool.hpp \
     sleeper.hpp \
-    webbrowser.hpp
+    webbrowser.hpp \
+    wikipage.hpp
 
 FORMS    += mainwindow.ui \
     logs.ui \

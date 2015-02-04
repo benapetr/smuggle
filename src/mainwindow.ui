@@ -27,7 +27,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionCreate_wiki"/>
     <addaction name="actionOpen_datafile"/>
     <addaction name="actionManage_wikis"/>
     <addaction name="actionUpdate_content"/>
@@ -44,8 +43,11 @@
     <property name="title">
      <string>Wiki</string>
     </property>
+    <addaction name="actionCreate_wiki"/>
     <addaction name="actionImport_pages"/>
     <addaction name="actionUpdate_meta_information"/>
+    <addaction name="separator"/>
+    <addaction name="actionDelete_wiki"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuWiki"/>
@@ -98,6 +100,11 @@
   <action name="actionUpdate_meta_information">
    <property name="text">
     <string>Update meta information</string>
+   </property>
+  </action>
+  <action name="actionDelete_wiki">
+   <property name="text">
+    <string>Delete wiki</string>
    </property>
   </action>
  </widget>

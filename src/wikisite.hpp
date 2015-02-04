@@ -87,6 +87,7 @@ namespace Smuggle
             */
             WikiSite(SwSql *df, QString name, QString url, QString path, QString script, bool https, bool oauth, QString channel, QString wl, QString han, bool isrtl = false);
             ~WikiSite();
+            int LastNS();
             WikiPageNS *RetrieveNSFromTitle(QString title);
             WikiPageNS *RetrieveNSByCanonicalName(QString CanonicalName);
             void InsertNS(WikiPageNS *Ns);

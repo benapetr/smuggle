@@ -11,7 +11,9 @@
 // Copyright (c) Petr Bena 2015
 
 #include "configuration.hpp"
+#include "generic.hpp"
 #include "wikisite.hpp"
+#include <QDir>
 
 using namespace Smuggle;
 
@@ -36,8 +38,19 @@ QString Configuration::GetURLProtocolPrefix(WikiSite *s)
 QString Configuration::GetProjectURL(WikiSite *Project)
 {
     if (!Project->URL.endsWith("/"))
-        return Configuration::GetURLProtocolPrefix() + Project->URL + "/";
-    return Configuration::GetURLProtocolPrefix() + Project->URL;
+        return Configuration::GetURLProtocolPrefix(Project) + Project->URL + "/";
+    return Configuration::GetURLProtocolPrefix(Project) + Project->URL;
+}
+
+QString Configuration::GetConfigurationPath()
+{
+    QString path = Generic::SanitizePath(Configuration::HomePath + QDir::separator() + "Configuration" + QDir::separator());
+    QDir conf(path);
+    if (!conf.exists())
+    {
+        conf.mkpath(path);
+    }
+    return path;
 }
 
 QString Configuration::GetProjectWikiURL(WikiSite *Project)

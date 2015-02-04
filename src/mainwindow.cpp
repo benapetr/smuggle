@@ -23,6 +23,7 @@
 #include "wikitool.hpp"
 #include "swordlog.hpp"
 #include "syslog.hpp"
+#include <QFile>
 #include <QMutex>
 #include <QTimer>
 
@@ -45,6 +46,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this->loop, SIGNAL(timeout()), this, SLOT(OnLogs()));
     this->RefreshWiki();
     this->loop->start(200);
+    QFile *layout;
+    if (QFile().exists(Configuration::GetConfigurationPath() + "mainwindow_state"))
+    {
+        layout = new QFile(Configuration::GetConfigurationPath() + "mainwindow_state");
+        if (!layout->open(QIODevice::ReadOnly))
+            Syslog::Logs->ErrorLog("Unable to restore window states");
+        else if (!this->restoreState(layout->readAll()))
+            DEBUG1("Failed to restore state");
+
+        layout->close();
+        delete layout;
+    }
+    if (QFile().exists(Configuration::GetConfigurationPath() + "mainwindow_geometry"))
+    {
+        DEBUG1("Loading geometry");
+        layout = new QFile(Configuration::GetConfigurationPath() + "mainwindow_geometry");
+        if (!layout->open(QIODevice::ReadOnly))
+            Syslog::Logs->ErrorLog("Unable to restore geometry");
+        else if (!this->restoreGeometry(layout->readAll()))
+            DEBUG1("Failed to restore layout");
+        layout->close();
+        delete layout;
+    }
 }
 
 MainWindow::~MainWindow()
@@ -66,7 +90,7 @@ void Smuggle::MainWindow::on_actionOpen_datafile_triggered()
 
 void Smuggle::MainWindow::on_actionExit_triggered()
 {
-    Core::Shutdown();
+    this->Quit();
 }
 
 void Smuggle::MainWindow::on_actionManage_wikis_triggered()
@@ -110,6 +134,11 @@ void Smuggle::MainWindow::on_actionImport_pages_triggered()
         Generic::pMessageBox(this, "No wiki", "No wiki is currently selected in list of wikis");
         return;
     }
+    if (!this->CurrentSite->IsInitialized)
+    {
+        Generic::pMessageBox(this, "Error", "This wiki is not initialized", MessageBoxStyleError);
+        return;
+    }
     ImportPages *p_wn = new ImportPages(this, CurrentSite);
     p_wn->setAttribute(Qt::WA_DeleteOnClose);
     p_wn->show();
@@ -118,4 +147,46 @@ void Smuggle::MainWindow::on_actionImport_pages_triggered()
 void Smuggle::MainWindow::on_actionUpdate_meta_information_triggered()
 {
     WikiTool::UpdateMeta(this->CurrentSite);
+}
+
+void MainWindow::Quit()
+{
+    QFile *layout = new QFile(Configuration::GetConfigurationPath() + "mainwindow_state");
+    if (!layout->open(QIODevice::ReadWrite | QIODevice::Truncate))
+        Syslog::Logs->ErrorLog("Unable to write state to a config file");
+    else
+        layout->write(this->saveState());
+    layout->close();
+    delete layout;
+    layout = new QFile(Configuration::GetConfigurationPath() + "mainwindow_geometry");
+    if (!layout->open(QIODevice::ReadWrite | QIODevice::Truncate))
+        Syslog::Logs->ErrorLog("Unable to write geometry to a config file");
+    else
+    layout->write(this->saveGeometry());
+    layout->close();
+    delete layout;
+    Core::Shutdown();
+}
+
+void Smuggle::MainWindow::on_actionDelete_wiki_triggered()
+{
+    if (!this->CurrentSite)
+        return;
+
+    //if (Generic::pMessageBox(this, "Delete", "If you delete this wiki you will permanently lose all its data", MessageBoxStyleQuestion) == Qt::)
+    QString wiki = QString::number(this->CurrentSite->ID);
+    QString sql = "BEGIN;\n"\
+                  "DELETE FROM wiki WHERE id = " + wiki + ";\n"\
+                  "DELETE FROM page WHERE wiki = " + wiki + ";\n"\
+                  "DELETE FROM revision WHERE wiki = " + wiki + ";\n"\
+                  "DELETE FROM namespaces WHERE wiki = " + wiki + ";\n"\
+                  "DELETE FROM text WHERE wiki = " + wiki + ";\nCOMMIT;";
+    if (!this->CurrentSite->Datafile->ExecuteNonQuery(sql))
+    {
+        Generic::pMessageBox(this, "Error", "Failed to delete wiki: " + this->CurrentSite->Datafile->LastError);
+        return;
+    }
+    delete this->CurrentSite;
+    this->CurrentSite = NULL;
+    this->RefreshWiki();
 }

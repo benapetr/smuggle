@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>198</width>
+    <width>192</width>
     <height>337</height>
    </rect>
   </property>
@@ -35,6 +35,13 @@
     </item>
     <item>
      <widget class="QTableWidget" name="tableWidget"/>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="text">
+       <string>Show unavaliable pages</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
