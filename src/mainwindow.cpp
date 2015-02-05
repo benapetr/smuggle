@@ -25,6 +25,7 @@
 #include "syslog.hpp"
 #include <QFile>
 #include <QMutex>
+#include <QWebView>
 #include <QTimer>
 
 using namespace Smuggle;

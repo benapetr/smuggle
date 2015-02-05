@@ -13,7 +13,11 @@
 #ifndef WEBBROWSER_HPP
 #define WEBBROWSER_HPP
 
+#include "definitions.hpp"
+
 #include <QWidget>
+
+class QWebView;
 
 namespace Ui
 {
@@ -28,8 +32,15 @@ namespace Smuggle
         public:
             explicit WebBrowser(QWidget *parent = 0);
             ~WebBrowser();
+            void CreateNewBrowserTab(QString title, int index);
+            QWebView *SelectedWeb();
+
+        private slots:
+            void on_tabWidget_currentChanged(int index);
 
         private:
+            QList<QWebView*> lBrowsers;
+            QWebView *currentWeb;
             Ui::WebBrowser *ui;
     };
 }

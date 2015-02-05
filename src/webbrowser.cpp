@@ -10,17 +10,61 @@
 
 // Copyright (c) Petr Bena 2015
 
+#include "exception.hpp"
 #include "webbrowser.hpp"
 #include "ui_webbrowser.h"
+#include <QVBoxLayout>
+#include <QWebView>
 
 using namespace Smuggle;
 
 WebBrowser::WebBrowser(QWidget *parent) : QWidget(parent), ui(new Ui::WebBrowser)
 {
     this->ui->setupUi(this);
+    this->currentWeb = NULL;
+    this->CreateNewBrowserTab("New page", 0);
 }
 
 WebBrowser::~WebBrowser()
 {
     delete this->ui;
+}
+
+void WebBrowser::CreateNewBrowserTab(QString title, int index)
+{
+    QWidget *tab = new QWidget(this);
+    QWebView *web = new QWebView(this);
+    this->lBrowsers.append(web);
+    QVBoxLayout *lay = new QVBoxLayout(tab);
+    lay->setSizeConstraint(QLayout::SetNoConstraint);
+    tab->setLayout(lay);
+    lay->setSpacing(0);
+    lay->setContentsMargins(0, 0, 0, 0);
+    lay->addWidget(web);
+    this->ui->tabWidget->insertTab(index, tab, title);
+    this->ui->tabWidget->setCurrentIndex(index);
+    this->currentWeb = web;
+}
+
+QWebView *WebBrowser::SelectedWeb()
+{
+    if (!this->currentWeb)
+        throw new Smuggle::Exception("Invalid web", BOOST_CURRENT_FUNCTION);
+
+    return this->currentWeb;
+}
+
+void Smuggle::WebBrowser::on_tabWidget_currentChanged(int index)
+{
+    int in = this->ui->tabWidget->count() - 1;
+    if (index == in)
+    {
+        // we need to create a new browser window
+        this->CreateNewBrowserTab("New tab", in);
+    } else
+    {
+        this->currentWeb = (QWebView*)this->ui->tabWidget->widget(index)->layout()->itemAt(0)->widget();
+        if (!this->currentWeb)
+            throw new Smuggle::Exception("Invalid browser pointer", BOOST_CURRENT_FUNCTION);
+    }
 }
