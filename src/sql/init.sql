@@ -41,11 +41,13 @@ CREATE TABLE text
 (
     "id" INTEGER PRIMARY KEY,
     "wiki" INTEGER NOT NULL,
+    "revid" INTEGER NOT NULL, -- revision that is refering to this text
     "text" TEXT NOT NULL,
     "html" TEXT NOT NULL
 );
 
 CREATE INDEX idx_text_wiki ON text(wiki);
+CREATE INDEX idx_text_revid ON text(revid);
 
 CREATE TABLE page
 (
