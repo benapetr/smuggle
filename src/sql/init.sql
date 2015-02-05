@@ -90,7 +90,27 @@ CREATE TABLE metadata
     "value" TEXT
 );
 
+CREATE TABLE links
+(
+    "id" INTEGER PRIMARY KEY,
+    "wiki" NUMERIC NOT NULL,
+    "from" TEXT NOT NULL,
+    "to" TEXT NOT NULL
+);
+
+CREATE INDEX idx_links_wiki ON links(wiki);
+
 BEGIN;
+-- -------------------------------------------
+-- Version
+-- Increment patch when
+-- * Make / drop index
+-- * Add column
+-- * Add table
+-- Increment revision when
+-- * Remove column or table
+-- -------------------------------------------
 INSERT INTO metadata (name, value) VALUES ('version', '1.0.0');
+-- Time when this datafile was created
 INSERT INTO metadata (name, value) VALUES ('created', CURRENT_TIMESTAMP);
 COMMIT;
