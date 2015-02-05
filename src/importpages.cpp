@@ -114,17 +114,17 @@ static void Pages_Finish(Query *query)
     QList<ApiQueryResultNode*> pages = qr->GetApiQueryResult()->GetNodes("p");
     QString title;
     if (!pages.count())
-        goto done;
+        goto check_ns;
     foreach (ApiQueryResultNode *node, pages)
     {
-        if (!f->LastTitle.isEmpty() && f->LastTitle == node->GetAttribute("title"))
-            goto done;
+        if (pages.last() == node && !f->LastTitle.isEmpty() && f->LastTitle == node->GetAttribute("title"))
+            goto check_ns;
         if (f->Limit <= f->Pages.count())
             goto done;
         f->LastTitle = node->GetAttribute("title");
         title = node->GetAttribute("title");
         if (title.isEmpty())
-            goto done;
+            continue;
         QString ns = node->GetAttribute("ns");
         WikiPage page(f->site, title);
         // check if this page is already in DB now
@@ -173,7 +173,7 @@ static void Pages_Finish(Query *query)
         goto exit;
     }
 
-    done:
+    check_ns:
         // check if last namespace was really last
         if (f->LastNS < f->site->LastNS())
         {
@@ -200,6 +200,8 @@ static void Pages_Finish(Query *query)
                 ns++;
             }
         }
+
+    done:
         f->FinishLoad();
 
     exit:

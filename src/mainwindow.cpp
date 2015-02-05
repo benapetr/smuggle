@@ -70,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         layout->close();
         delete layout;
     }
+    this->fWeb->SelectedWeb()->setHtml(Generic::LoadResource("html/welcome.htm"));
 }
 
 MainWindow::~MainWindow()

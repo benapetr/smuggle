@@ -55,6 +55,7 @@ namespace Smuggle
         bool SafeBool(QString value, bool defaultvalue = false);
         int pMessageBox(QWidget *parent, QString title, QString text, MessageBoxStyle st = MessageBoxStyleNormal, bool enforce_stop = false);
         QString SanitizePath(QString name);
+        QString LoadResource(QString path);
         /*!
          * \brief MessageBox Display a message box
          * \param title Title of message box

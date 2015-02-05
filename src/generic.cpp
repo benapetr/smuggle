@@ -96,8 +96,20 @@ int Generic::pMessageBox(QWidget *parent, QString title, QString text, MessageBo
     return Generic::MessageBox(title, text, st, enforce_stop, parent);
 }
 
-
 bool Generic::SafeBool(int value)
 {
     return value != 0;
+}
+
+QString Generic::LoadResource(QString path)
+{
+    QFile *file = new QFile(":/text/" + path);
+    if (!file->open(QIODevice::ReadOnly))
+    {
+        throw new Smuggle::Exception("Failed to open " + path);
+    }
+    QString t = file->readAll();
+    file->close();
+    delete file;
+    return t;
 }
