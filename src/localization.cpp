@@ -84,25 +84,24 @@ void Localizations::LocalInit(QString name, bool xml)
         // we need to remember ID of this language
         Localizations::EnglishID = this->LocalizationData.count();
     }
-    /*if (Configuration::SystemConfig_SafeMode)
+    if (Configuration::SystemConfig_SafeMode)
     {
         // we don't want to load custom files in safe mode
         f = new QFile(":/huggle/text/Localization/" + name + ".xml");
     } else
     {
-        if (QFile().exists(Configuration::GetLocalizationDataPath() + name + ".xml"))
-        {
-            f = new QFile(Configuration::GetLocalizationDataPath() + name + ".xml");
-        } else
-        {
-            f = new QFile(":/huggle/text/Localization/" + name + ".xml");
-        }
+        //if (QFile().exists(Configuration::GetLocalizationDataPath() + name + ".xml"))
+        //{
+        //    f = new QFile(Configuration::GetLocalizationDataPath() + name + ".xml");
+        //} else
+        //{
+        //    f = new QFile(":/huggle/text/Localization/" + name + ".xml");
+        //}
     }
-    f->open(QIODevice::ReadOnly);
-    this->LocalizationData.append(Localizations::MakeLanguageUsingXML(QString(f->readAll()), name));
-    f->close();
+    //f->open(QIODevice::ReadOnly);
+    //this->LocalizationData.append(Localizations::MakeLanguageUsingXML(QString(f->readAll()), name));
+    //f->close();
     delete f;
-    */
 }
 
 QString Localizations::Localize(QString key)

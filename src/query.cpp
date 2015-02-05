@@ -31,6 +31,7 @@ Query::Query()
     this->Result = NULL;
     this->callback = NULL;
     this->Dependency = NULL;
+    this->FailureCallback = NULL;
     this->CallbackOwner = NULL;
     this->CallbackResult = NULL;
     this->HiddenQuery = false;

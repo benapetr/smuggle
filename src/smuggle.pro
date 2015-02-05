@@ -88,7 +88,7 @@ FORMS    += mainwindow.ui \
     importpages.ui \
     webbrowser.ui
 
-#LIBS += #-ldl
+LIBS += -ldl
 
 RESOURCES += \
     sources.qrc

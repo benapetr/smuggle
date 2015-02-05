@@ -12,6 +12,7 @@
 
 #include "core.hpp"
 #include "mainwindow.hpp"
+#include "terminalparser.hpp"
 #include <QApplication>
 
 using namespace Smuggle;
@@ -20,6 +21,13 @@ int main(int argc, char *argv[])
 {
     QApplication::setApplicationName("Smuggle");
     QApplication::setOrganizationName("Wikimedia");
+    TerminalParser *parser = new TerminalParser(argc, argv);
+    if (parser->Parse())
+    {
+        delete parser;
+        return 0;
+    }
+    delete parser;
     QApplication a(argc, argv);
     Core::Init();
     Smuggle::MainWindow w;
