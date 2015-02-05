@@ -100,6 +100,13 @@ SqlResult *SwSql::ExecuteQuery(QString sql)
     return this->ExecuteQuery_Bind(sql, QStringList());
 }
 
+SqlResult *SwSql::ExecuteQuery_Bind(QString sql, QString parameter)
+{
+    QStringList list;
+    list << parameter;
+    return this->ExecuteQuery_Bind(sql, list);
+}
+
 SqlResult *SwSql::ExecuteQuery_Bind(QString sql, QStringList parameter)
 {
     SqlResult *result = new SqlResult();

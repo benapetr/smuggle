@@ -19,6 +19,7 @@
 #include "generic.hpp"
 #include "syslog.hpp"
 #include "swsql.hpp"
+#include "wikitool.hpp"
 #include "wikisite.hpp"
 
 using namespace Smuggle;
@@ -231,4 +232,16 @@ void ImportPages::Enable(bool value)
 void Smuggle::ImportPages::on_pushButton_3_clicked()
 {
 
+}
+
+void Smuggle::ImportPages::on_pushButton_clicked()
+{
+    this->Enable(false);
+    foreach (QString page, this->CheckBoxes.keys())
+    {
+        if (this->CheckBoxes[page]->isChecked())
+        {
+            WikiTool::DownloadPageFromTitle(this->site, page);
+        }
+    }
 }

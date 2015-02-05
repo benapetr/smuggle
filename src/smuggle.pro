@@ -6,7 +6,7 @@
 
 QT       += core xml webkit gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets
 
 TARGET = smuggle
 TEMPLATE = app
@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     wikitool.cpp \
     sleeper.cpp \
     webbrowser.cpp \
-    wikipage.cpp
+    wikipage.cpp \
+    retrievequery.cpp
 
 HEADERS  += mainwindow.hpp \
     configuration.hpp \
@@ -76,7 +77,8 @@ HEADERS  += mainwindow.hpp \
     wikitool.hpp \
     sleeper.hpp \
     webbrowser.hpp \
-    wikipage.hpp
+    wikipage.hpp \
+    retrievequery.hpp
 
 FORMS    += mainwindow.ui \
     logs.ui \
@@ -86,7 +88,9 @@ FORMS    += mainwindow.ui \
     importpages.ui \
     webbrowser.ui
 
-LIBS += -ldl
+#LIBS += #-ldl
 
 RESOURCES += \
     sources.qrc
+
+DISTFILES +=

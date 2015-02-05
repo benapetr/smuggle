@@ -20,6 +20,11 @@ MediaWikiObject::MediaWikiObject()
     this->Site = NULL;
 }
 
+MediaWikiObject::MediaWikiObject(WikiSite *site)
+{
+    this->Site = site;
+}
+
 MediaWikiObject::MediaWikiObject(MediaWikiObject *m)
 {
     this->Site = m->Site;

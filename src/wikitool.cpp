@@ -14,6 +14,7 @@
 #include "apiqueryresult.hpp"
 #include "syslog.hpp"
 #include "swsql.hpp"
+#include "retrievequery.hpp"
 #include "wikisite.hpp"
 #include "wikitool.hpp"
 
@@ -82,7 +83,10 @@ void WikiTool::UpdateMeta(WikiSite *wiki)
 }
 
 
-void WikiTool::DownloadPageFromTitle(WikiSite *wiki, QString title)
+RetrieveQuery *WikiTool::DownloadPageFromTitle(WikiSite *wiki, QString title)
 {
-
+    RetrieveQuery *query = new RetrieveQuery(wiki, title);
+    query->IncRef();
+    query->Process();
+    return query;
 }

@@ -18,10 +18,11 @@
 
 namespace Smuggle
 {
+    class RetrieveQuery;
     namespace WikiTool
     {
         void UpdateMeta(WikiSite *wiki);
-        void DownloadPageFromTitle(WikiSite *wiki, QString title);
+        Smuggle::RetrieveQuery *DownloadPageFromTitle(WikiSite *wiki, QString title);
     }
 }
 

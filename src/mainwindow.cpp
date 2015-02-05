@@ -182,6 +182,7 @@ void Smuggle::MainWindow::on_actionDelete_wiki_triggered()
                   "DELETE FROM page WHERE wiki = " + wiki + ";\n"\
                   "DELETE FROM revision WHERE wiki = " + wiki + ";\n"\
                   "DELETE FROM namespaces WHERE wiki = " + wiki + ";\n"\
+                  "DELETE FROM links WHERE wiki = " + wiki + ";\n"\
                   "DELETE FROM text WHERE wiki = " + wiki + ";\nCOMMIT;";
     if (!this->CurrentSite->Datafile->ExecuteNonQuery(sql))
     {

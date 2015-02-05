@@ -62,6 +62,7 @@ namespace Smuggle
             qint64 LastRow();
             bool ExecuteNonQuery(QString sql);
             SqlResult *ExecuteQuery(QString sql);
+            SqlResult *ExecuteQuery_Bind(QString sql, QString parameter);
             SqlResult *ExecuteQuery_Bind(QString sql, QStringList parameter);
             sqlite3 *db;
             QString LastStatement;
