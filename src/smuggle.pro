@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     sleeper.cpp \
     webbrowser.cpp \
     wikipage.cpp \
-    retrievequery.cpp
+    retrievequery.cpp \
+    webquery.cpp
 
 HEADERS  += mainwindow.hpp \
     configuration.hpp \
@@ -78,7 +79,8 @@ HEADERS  += mainwindow.hpp \
     sleeper.hpp \
     webbrowser.hpp \
     wikipage.hpp \
-    retrievequery.hpp
+    retrievequery.hpp \
+    webquery.hpp
 
 FORMS    += mainwindow.ui \
     logs.ui \

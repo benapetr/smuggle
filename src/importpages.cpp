@@ -18,6 +18,7 @@
 #include "ui_importpages.h"
 #include "retrievequery.hpp"
 #include "generic.hpp"
+#include "mainwindow.hpp"
 #include "syslog.hpp"
 #include "swsql.hpp"
 #include "wikitool.hpp"
@@ -301,6 +302,7 @@ void ImportPages::OnTick()
         this->t->stop();
         this->Enable(true);
         this->Reload();
+        MainWindow::Window->RefreshWiki();
         // remove all queries
         while (this->Downloads.count())
         {

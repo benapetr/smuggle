@@ -17,6 +17,7 @@
 #include "retrievequery.hpp"
 #include "swsql.hpp"
 #include "syslog.hpp"
+#include "webquery.hpp"
 #include "wikisite.hpp"
 
 using namespace Smuggle;
@@ -25,19 +26,21 @@ RetrieveQuery::RetrieveQuery(WikiSite *site, QString page) : MediaWikiObject(sit
 {
     this->title = page;
     this->qText = NULL;
+    this->qOriginal = NULL;
 }
 
 RetrieveQuery::~RetrieveQuery()
 {
+    GC_DECREF(this->qOriginal);
     GC_DECREF(this->qText);
 }
 
 bool RetrieveQuery::IsProcessed()
 {
-    if (!this->qText)
+    if (!this->qText || !this->qOriginal)
         return false;
 
-    if (!this->qText->IsProcessed())
+    if (!this->qText->IsProcessed() || !this->qOriginal->IsProcessed())
         return false;
 
     return true;
@@ -145,6 +148,8 @@ static void FinishText(Query *query)
     // start transaction
     SMUGGLE_ASSERT_ROLLBACK("BEGIN;", "Unable to start a transaction");
 
+    q->revid_text = revid;
+
     // let's insert to text table
     SQL = "INSERT INTO text (wiki, revid, text, html) VALUES (" + sid + ", " + revid + ", ?, '');";
     SMUGGLE_ASSERT_BOUND_ROLLBACK(SQL, "Unable to insert to text table", revision->Value);
@@ -173,7 +178,8 @@ static void FinishText(Query *query)
           " WHERE " + "id = " + QString::number(page_id) + ";";
     SMUGGLE_ASSERT_ROLLBACK(SQL, "Unable to update the page table");
     SMUGGLE_ASSERT_ROLLBACK("COMMIT;", "Unable to commit");
-    q->Finish();
+
+    q->RetrieveHtml();
     goto exit;
 
     do_rollback:
@@ -197,6 +203,28 @@ static void ErrorText(Query *query)
     x->DecRef();
 }
 
+static void ErrorHtml(Query *query)
+{
+    WebQuery *x = (WebQuery*)query;
+    ((RetrieveQuery*) x->CallbackOwner)->SetError(x->GetFailureReason());
+    x->DecRef();
+}
+
+static void ProcessHtml(Query *query)
+{
+    WebQuery *x = (WebQuery*)query;
+    RetrieveQuery *q = (RetrieveQuery*)x->CallbackOwner;
+    QString SQL = "UPDATE text SET html = ? WHERE wiki = " + QString::number(q->GetSite()->ID) + " AND revid = " + q->revid_text + ";";
+    SqlResult *sql = NULL;
+    SMUGGLE_ASSERT_BOUND_ROLLBACK(SQL, "Unable to update text", x->Result->Data);
+
+    do_rollback:
+    if (sql)
+        delete sql;
+        q->Finish();
+        x->DecRef();
+}
+
 void RetrieveQuery::Process()
 {
     this->qText = new ApiQuery(ActionQuery, this->GetSite());
@@ -206,6 +234,18 @@ void RetrieveQuery::Process()
     this->qText->FailureCallback = (Callback) ErrorText;
     this->qText->callback = (Callback) FinishText;
     this->qText->Process();
+}
+
+void RetrieveQuery::RetrieveHtml()
+{
+    this->qOriginal = new WebQuery();
+    this->qOriginal->IncRef();
+    this->qOriginal->URL = Configuration::GetProjectWikiURL(this->GetSite()) + QUrl::toPercentEncoding(this->title)
+            + "?action=render";
+    this->qOriginal->callback = (Callback)ProcessHtml;
+    this->qOriginal->CallbackOwner = this;
+    this->qOriginal->FailureCallback = (Callback)ErrorHtml;
+    this->qOriginal->Process();
 }
 
 void RetrieveQuery::Finish()

@@ -118,7 +118,7 @@ SqlResult *SwSql::ExecuteQuery_Bind(QString sql, QStringList parameter)
         goto on_error;
     foreach (QString text, parameter)
     {
-        x = sqlite3_bind_text(statement, current_parameter++, text.toUtf8().constData(), -1, SQLITE_STATIC);
+        x = sqlite3_bind_text(statement, current_parameter++, text.toUtf8().constData(), -1, SQLITE_TRANSIENT);
         if (!this->Evaluate(x))
             goto on_error;
     }

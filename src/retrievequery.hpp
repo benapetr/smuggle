@@ -20,6 +20,7 @@
 namespace Smuggle
 {
     class ApiQuery;
+    class WebQuery;
     class WikiSite;
     class RetrieveQuery : public Query, public MediaWikiObject
     {
@@ -30,12 +31,15 @@ namespace Smuggle
             QString GetFailureReason();
             void SetError(QString text);
             void Process();
+            void RetrieveHtml();
             void Finish();
             bool IsFailed();
             QString PageName();
+            QString revid_text;
         private:
             QString error;
             ApiQuery *qText;
+            WebQuery *qOriginal;
             QString title;
     };
 }

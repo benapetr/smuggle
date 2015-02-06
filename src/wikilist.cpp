@@ -105,7 +105,7 @@ void WikiList::Open(QString page)
     }
     int preferred_text = result->GetRow(0).GetField(0).toInt();
     delete result;
-    result = db->ExecuteQuery("SELECT text FROM text WHERE wiki = " + sid +
+    result = db->ExecuteQuery("SELECT html FROM text WHERE wiki = " + sid +
                               " AND revid = "+ QString::number(preferred_text) + ";");
     if (result->InError)
     {
