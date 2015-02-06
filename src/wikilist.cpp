@@ -58,7 +58,7 @@ void WikiList::SelectWiki(int in)
     this->ui->tableWidget->clear();
     // get a list of all pages
     SqlResult *sql = site->Datafile->ExecuteQuery("SELECT name FROM page WHERE wiki = " + QString::number(site->ID) + " AND "\
-                                                  "deleted == 0 AND downloaded == 1;");
+                                                  "deleted == 0 AND downloaded == 1 ORDER by name ASC;");
     if (sql->InError)
     {
         Generic::MessageBox("Error", "Unable to retrieve list of pages: " + site->Datafile->LastError);
@@ -119,7 +119,8 @@ void WikiList::Open(QString page)
         delete result;
         return;
     }
-    QString html = result->GetRow(0).GetField(0).toString();
+    QString html = Generic::MakePage(result->GetRow(0).GetField(0).toString());
+    MainWindow::Window->SetWebPageTitle(page);
     MainWindow::Window->GetBrowser()->setHtml(html);
 }
 

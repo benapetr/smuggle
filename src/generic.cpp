@@ -113,3 +113,12 @@ QString Generic::LoadResource(QString path)
     delete file;
     return t;
 }
+
+
+QString Generic::MakePage(QString body)
+{
+    QString header = LoadResource("html/header.htm");
+    QString footer = LoadResource("html/footer.htm");
+    header.replace("<<<FONT-SIZE>>>", "18").replace("<<<FONT-FAMILY>>>", "Arial, Helvetica");
+    return header + body + footer;
+}

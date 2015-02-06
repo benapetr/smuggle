@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     webbrowser.cpp \
     wikipage.cpp \
     retrievequery.cpp \
-    webquery.cpp
+    webquery.cpp \
+    sourcehtm.cpp
 
 HEADERS  += mainwindow.hpp \
     configuration.hpp \
@@ -80,7 +81,8 @@ HEADERS  += mainwindow.hpp \
     webbrowser.hpp \
     wikipage.hpp \
     retrievequery.hpp \
-    webquery.hpp
+    webquery.hpp \
+    sourcehtm.hpp
 
 FORMS    += mainwindow.ui \
     logs.ui \
@@ -88,7 +90,8 @@ FORMS    += mainwindow.ui \
     openwikiform.ui \
     wikilist.ui \
     importpages.ui \
-    webbrowser.ui
+    webbrowser.ui \
+    sourcehtm.ui
 
 LIBS += -ldl
 

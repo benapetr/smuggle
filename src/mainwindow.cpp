@@ -21,10 +21,13 @@
 #include "wikilist.hpp"
 #include "wikisite.hpp"
 #include "wikitool.hpp"
+#include "sourcehtm.hpp"
 #include "swordlog.hpp"
 #include "syslog.hpp"
 #include <QFile>
 #include <QMutex>
+#include <QWebFrame>
+#include <QMessageBox>
 #include <QWebView>
 #include <QTimer>
 
@@ -88,6 +91,11 @@ void MainWindow::RefreshWiki()
 QWebView *MainWindow::GetBrowser()
 {
     return this->fWeb->SelectedWeb();
+}
+
+void MainWindow::SetWebPageTitle(QString text)
+{
+    this->fWeb->SetTitle(text);
 }
 
 void Smuggle::MainWindow::on_actionOpen_datafile_triggered()
@@ -180,7 +188,9 @@ void Smuggle::MainWindow::on_actionDelete_wiki_triggered()
     if (!this->CurrentSite)
         return;
 
-    //if (Generic::pMessageBox(this, "Delete", "If you delete this wiki you will permanently lose all its data", MessageBoxStyleQuestion) == Qt::)
+    if (Generic::pMessageBox(this, "Delete", "Deleting of a wiki can't be undone, do you want to continue?", MessageBoxStyleQuestion) == QMessageBox::No)
+        return;
+
     QString wiki = QString::number(this->CurrentSite->ID);
     QString sql = "BEGIN;\n"\
                   "DELETE FROM wiki WHERE id = " + wiki + ";\n"\
@@ -197,4 +207,16 @@ void Smuggle::MainWindow::on_actionDelete_wiki_triggered()
     delete this->CurrentSite;
     this->CurrentSite = NULL;
     this->RefreshWiki();
+}
+
+void Smuggle::MainWindow::on_actionClose_triggered()
+{
+    this->fWeb->CloseTab(-2);
+}
+
+void Smuggle::MainWindow::on_actionDisplay_source_triggered()
+{
+    SourceHtm *w = new SourceHtm(this->fWeb->SelectedWeb()->page()->mainFrame()->toHtml(), this);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->show();
 }

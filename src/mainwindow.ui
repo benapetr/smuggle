@@ -35,7 +35,14 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <widget class="QMenu" name="menuDebug">
+     <property name="title">
+      <string>Debug</string>
+     </property>
+     <addaction name="actionDisplay_source"/>
+    </widget>
     <addaction name="actionAbout"/>
+    <addaction name="menuDebug"/>
    </widget>
    <widget class="QMenu" name="menuWiki">
     <property name="title">
@@ -121,6 +128,11 @@
   <action name="actionClose">
    <property name="text">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="actionDisplay_source">
+   <property name="text">
+    <string>Display source</string>
    </property>
   </action>
  </widget>

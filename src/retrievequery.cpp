@@ -26,6 +26,7 @@ RetrieveQuery::RetrieveQuery(WikiSite *site, QString page) : MediaWikiObject(sit
 {
     this->title = page;
     this->qText = NULL;
+    this->finished = false;
     this->qOriginal = NULL;
 }
 
@@ -37,6 +38,9 @@ RetrieveQuery::~RetrieveQuery()
 
 bool RetrieveQuery::IsProcessed()
 {
+    if (this->finished)
+        return true;
+
     if (!this->qText || !this->qOriginal)
         return false;
 
@@ -121,7 +125,7 @@ static void FinishText(Query *query)
     if (sql->Count() > 0)
     {
         if (Generic::SafeBool(sql->GetRow(0).GetField(1).toInt()))
-            goto exit;
+            goto done;
         else
             precached = true;
     }
@@ -182,6 +186,10 @@ static void FinishText(Query *query)
     q->RetrieveHtml();
     goto exit;
 
+    done:
+        q->Finish();
+        goto exit;
+
     do_rollback:
         if (!q->GetSite()->Datafile->ExecuteNonQuery("ROLLBACK;"))
         {
@@ -240,7 +248,7 @@ void RetrieveQuery::RetrieveHtml()
 {
     this->qOriginal = new WebQuery();
     this->qOriginal->IncRef();
-    this->qOriginal->URL = Configuration::GetProjectWikiURL(this->GetSite()) + QUrl::toPercentEncoding(this->title)
+    this->qOriginal->URL = Configuration::GetProjectWikiURL(this->GetSite()) + this->title
             + "?action=render";
     this->qOriginal->callback = (Callback)ProcessHtml;
     this->qOriginal->CallbackOwner = this;
@@ -251,6 +259,7 @@ void RetrieveQuery::RetrieveHtml()
 void RetrieveQuery::Finish()
 {
     this->ProcessCallback();
+    this->finished = true;
 }
 
 bool RetrieveQuery::IsFailed()

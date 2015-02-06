@@ -2,5 +2,7 @@
     <qresource prefix="/text">
         <file>sql/init.sql</file>
         <file>html/welcome.htm</file>
+        <file>html/footer.htm</file>
+        <file>html/header.htm</file>
     </qresource>
 </RCC>

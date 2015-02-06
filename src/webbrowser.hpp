@@ -34,6 +34,9 @@ namespace Smuggle
             ~WebBrowser();
             void CreateNewBrowserTab(QString title, int index);
             QWebView *SelectedWeb();
+            void SetTitle(QString page);
+            bool CloseTab(int index);
+            int CurrentIndex();
 
         private slots:
             void on_tabWidget_currentChanged(int index);

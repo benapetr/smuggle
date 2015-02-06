@@ -54,6 +54,44 @@ QWebView *WebBrowser::SelectedWeb()
     return this->currentWeb;
 }
 
+void WebBrowser::SetTitle(QString page)
+{
+    this->ui->tabWidget->setTabText(this->ui->tabWidget->currentIndex(), page);
+}
+
+bool WebBrowser::CloseTab(int index)
+{
+    if (index < 0)
+        index = this->ui->tabWidget->currentIndex();
+    if (index >= this->ui->tabWidget->count()-1)
+        return false;
+
+    QWebView *web = (QWebView*)this->ui->tabWidget->widget(index)->layout()->itemAt(0)->widget();
+
+    if (this->currentWeb == web)
+    {
+        if (this->ui->tabWidget->currentIndex() != 0)
+            this->ui->tabWidget->setCurrentIndex(0);
+        else if (this->ui->tabWidget->count() == 2)
+        {
+            // there is no way to switch to any other tab - this is a last one
+            return false;
+        } else
+        {
+            this->ui->tabWidget->setCurrentIndex(1);
+        }
+    }
+
+    this->lBrowsers.removeAll(web);
+    this->ui->tabWidget->removeTab(index);
+    delete web;
+}
+
+int WebBrowser::CurrentIndex()
+{
+    return this->ui->tabWidget->currentIndex();
+}
+
 void Smuggle::WebBrowser::on_tabWidget_currentChanged(int index)
 {
     int in = this->ui->tabWidget->count() - 1;

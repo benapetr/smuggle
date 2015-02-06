@@ -186,7 +186,10 @@ static void Pages_Finish(Query *query)
         {
             // update the page
         }
-        title = page.RootName();
+        title = page.PageName;
+        //! Fix me
+        if (title.contains(":"))
+            title = title.mid(title.indexOf(":") + 1);
         delete sql;
     }
 
@@ -275,7 +278,8 @@ void ImportPages::DownloadNext()
 
 void Smuggle::ImportPages::on_pushButton_3_clicked()
 {
-
+    foreach (QString xx, this->CheckBoxes.keys())
+        this->CheckBoxes[xx]->setChecked(true);
 }
 
 void Smuggle::ImportPages::on_pushButton_clicked()

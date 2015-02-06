@@ -38,6 +38,7 @@ namespace Smuggle
             QString revid_text;
         private:
             QString error;
+            bool finished;
             ApiQuery *qText;
             WebQuery *qOriginal;
             QString title;

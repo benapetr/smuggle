@@ -10,34 +10,25 @@
 
 // Copyright (c) Petr Bena 2015
 
-#ifndef OPENWIKIFORM_HPP
-#define OPENWIKIFORM_HPP
+#ifndef SOURCEHTM_HPP
+#define SOURCEHTM_HPP
 
 #include <QDialog>
 
-namespace Ui
-{
-    class OpenWikiForm;
+namespace Ui {
+    class SourceHtm;
 }
 
-namespace Smuggle
+class SourceHtm : public QDialog
 {
-    class OpenWikiForm : public QDialog
-    {
-            Q_OBJECT
+        Q_OBJECT
 
-        public:
-            explicit OpenWikiForm(QWidget *parent = 0);
-            ~OpenWikiForm();
+    public:
+        explicit SourceHtm(QString html, QWidget *parent = 0);
+        ~SourceHtm();
 
-        private slots:
-            void on_pushButton_clicked();
-            void on_checkBox_toggled(bool checked);
+    private:
+        Ui::SourceHtm *ui;
+};
 
-        private:
-            void Refresh();
-            Ui::OpenWikiForm *ui;
-    };
-}
-
-#endif // OPENWIKIFORM_HPP
+#endif // SOURCEHTM_HPP

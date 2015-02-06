@@ -39,6 +39,7 @@ namespace Smuggle
             ~MainWindow();
             void RefreshWiki();
             QWebView *GetBrowser();
+            void SetWebPageTitle(QString text);
             WikiSite *CurrentSite;
         private slots:
             void on_actionOpen_datafile_triggered();
@@ -50,6 +51,10 @@ namespace Smuggle
             void on_actionImport_pages_triggered();
             void on_actionUpdate_meta_information_triggered();
             void on_actionDelete_wiki_triggered();
+
+            void on_actionClose_triggered();
+
+            void on_actionDisplay_source_triggered();
 
         private:
             void Quit();

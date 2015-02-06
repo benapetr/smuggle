@@ -26,6 +26,7 @@ OpenWikiForm::OpenWikiForm(QWidget *parent) : QDialog(parent), ui(new Ui::OpenWi
     foreach (SwSql *file, SwSql::Datafiles)
         this->ui->comboBox->addItem(file->GetPath());
     this->ui->comboBox->setCurrentIndex(0);
+    this->Refresh();
 }
 
 OpenWikiForm::~OpenWikiForm()
@@ -83,4 +84,22 @@ void OpenWikiForm::on_pushButton_clicked()
     WikiTool::UpdateMeta(site);
     MainWindow::Window->RefreshWiki();
     this->close();
+}
+
+void Smuggle::OpenWikiForm::on_checkBox_toggled(bool checked)
+{
+    Q_UNUSED(checked);
+    this->Refresh();
+}
+
+void OpenWikiForm::Refresh()
+{
+    bool open = this->ui->checkBox->isChecked();
+    this->ui->checkBox_2->setVisible(open);
+    this->ui->label_3->setVisible(open);
+    this->ui->label_4->setVisible(open);
+    this->ui->comboBox->setVisible(open);
+    this->ui->label_2->setVisible(open);
+    this->ui->lineEdit_3->setVisible(open);
+    this->ui->lineEdit_2->setVisible(open);
 }
