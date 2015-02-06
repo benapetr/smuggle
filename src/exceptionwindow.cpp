@@ -12,17 +12,16 @@
 #include "exceptionwindow.hpp"
 #include "ui_exceptionwindow.h"
 
-using namespace Huggle;
+using namespace Smuggle;
 
 ExceptionWindow::ExceptionWindow(Exception *e) : ui(new Ui::ExceptionWindow)
 {
     this->ui->setupUi(this);
-    this->ui->textEdit->setText("Unfortunately Huggle has crashed. Please submit the following information "\
-                          "together with details of what were you doing to https://phabricator.wikimedia.org/maniphest/task/create/?projects=Huggle"\
-                          "\n\nSystem log\n==================\n" + Huggle::Syslog::HuggleLogs->RingLogToText()
-                          + "\n\n\n\nException details\n===========================\nError code: "
-                          + QString::number(e->ErrorCode) + "\nReason: "
-                          + e->Message + "\nSource:" + e->Source + "\nStack trace:\n" + e->StackTrace);
+    this->ui->textEdit->setText("Unfortunately Smuggle has crashed. Please submit the following information "\
+                          "together with details of what were you doing to https://phabricator.wikimedia.org/maniphest/task/create/?projects=Smuggle"\
+                          "\n\n\nException details\n===========================\nError code: ");
+                          //+ QString::number(e->ErrorCode) + "\nReason: "
+                          //+ e->Message + "\nSource:" + e->Source + "\nStack trace:\n" + e->StackTrace);
 }
 
 ExceptionWindow::~ExceptionWindow()

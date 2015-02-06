@@ -27,7 +27,7 @@ namespace Ui
     class ExceptionWindow;
 }
 
-namespace Huggle
+namespace Smuggle
 {
     //! Recovery window
     class ExceptionWindow : public QDialog

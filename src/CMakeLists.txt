@@ -54,7 +54,7 @@ file (GLOB uixx
     "*.ui"
 )
 
-SET(smuggle_SOURCES ${srcx})
+SET(smuggle_SOURCES ${srcx} "sqlite/sqlite3.c")
 SET(smuggle_FORMS ${uixx})
 SET(smuggle_RESOURCES ${resx})
 if(QT5_BUILD)
@@ -73,6 +73,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS( -DQT_USE_QSTRINGBUILDER )
 ADD_EXECUTABLE(smuggle ${smuggle_SOURCES} ${smuggle_HEADERS_MOC} ${smuggle_FORMS_HEADERS} ${smuggle_RESOURCES_RCC})
 TARGET_LINK_LIBRARIES(smuggle ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(smuggle dl)
 if (WIN32)
     TARGET_LINK_LIBRARIES(smuggle dbghelp)
 endif()
