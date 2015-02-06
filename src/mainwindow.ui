@@ -72,7 +72,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionCreate_wiki">
    <property name="text">
-    <string>Create wiki</string>
+    <string>Create link</string>
    </property>
   </action>
   <action name="actionManage_wikis">
