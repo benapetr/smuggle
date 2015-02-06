@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>827</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -28,8 +28,6 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen_datafile"/>
-    <addaction name="actionManage_wikis"/>
-    <addaction name="actionUpdate_content"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>

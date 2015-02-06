@@ -92,7 +92,7 @@ bool SwSql::ExecuteNonQuery(QString sql)
 static QString StringFromUnsignedChar( const unsigned char *str )
 {
     std::string temp = std::string(reinterpret_cast<const char*>(str));
-    return QString(temp.c_str());
+    return QString::fromUtf8(temp.c_str());
 }
 
 SqlResult *SwSql::ExecuteQuery(QString sql)

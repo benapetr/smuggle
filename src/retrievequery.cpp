@@ -202,6 +202,7 @@ void RetrieveQuery::Process()
     this->qText = new ApiQuery(ActionQuery, this->GetSite());
     this->qText->Parameters = "prop=revisions&titles=" + QUrl::toPercentEncoding(this->title) + "&rvprop=ids|timestamp|user|comment|content&rvlimit=1";
     this->qText->CallbackOwner = this;
+    this->qText->IncRef();
     this->qText->FailureCallback = (Callback) ErrorText;
     this->qText->callback = (Callback) FinishText;
     this->qText->Process();

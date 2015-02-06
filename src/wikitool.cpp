@@ -86,7 +86,5 @@ void WikiTool::UpdateMeta(WikiSite *wiki)
 RetrieveQuery *WikiTool::DownloadPageFromTitle(WikiSite *wiki, QString title)
 {
     RetrieveQuery *query = new RetrieveQuery(wiki, title);
-    query->IncRef();
-    query->Process();
     return query;
 }

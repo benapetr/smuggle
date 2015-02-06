@@ -85,6 +85,11 @@ void MainWindow::RefreshWiki()
     this->fWL->Refresh();
 }
 
+QWebView *MainWindow::GetBrowser()
+{
+    return this->fWeb->SelectedWeb();
+}
+
 void Smuggle::MainWindow::on_actionOpen_datafile_triggered()
 {
 

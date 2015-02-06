@@ -16,6 +16,7 @@
 #include "exception.hpp"
 #include "importpages.hpp"
 #include "ui_importpages.h"
+#include "retrievequery.hpp"
 #include "generic.hpp"
 #include "syslog.hpp"
 #include "swsql.hpp"
@@ -47,25 +48,20 @@ ImportPages::ImportPages(QWidget *parent, WikiSite *ws) : QDialog(parent), ui(ne
     this->ui->tableWidget->setShowGrid(false);
     this->ui->tableWidget_2->setVisible(false);
     this->Limit = 0;
-    SqlResult *result = ws->Datafile->ExecuteQuery("SELECT name, downloaded FROM page WHERE wiki = " + QString::number(site->ID) + ";");
-
-    int n = 0;
-    while (n < result->Count())
-    {
-        SwRow page = result->GetRow(n);
-        n++;
-        if (page.GetField(0).toString().isEmpty())
-            continue;
-        WikiPage wp = WikiPage(this->site, page.GetField(0).toString());
-        bool present = Generic::SafeBool(page.GetField(1).toInt());
-        this->InsertPage(wp, present);
-    }
-    this->ui->tableWidget->resizeColumnsToContents();
-    this->ui->tableWidget->resizeRowsToContents();
+    this->Reload();
+    this->busy = false;
+    this->t = new QTimer();
+    connect(this->t, SIGNAL(timeout()), this, SLOT(OnTick()));
 }
 
 ImportPages::~ImportPages()
 {
+    if (this->t)
+    {
+        if (this->t->isActive())
+            this->t->stop();
+        delete this->t;
+    }
     delete this->ui;
 }
 
@@ -106,6 +102,38 @@ void ImportPages::FinishLoad()
     this->ui->tableWidget->resizeColumnsToContents();
     this->ui->tableWidget->resizeRowsToContents();
     this->Enable(true);
+}
+
+void ImportPages::Reload()
+{
+    while (this->ui->tableWidget->rowCount())
+        this->ui->tableWidget->removeRow(0);
+
+    QStringList keys = this->CheckBoxes.keys();
+
+    foreach (QString cb, keys)
+    {
+        delete this->CheckBoxes[cb];
+        this->CheckBoxes.remove(cb);
+    }
+
+    this->Pages.clear();
+
+    SqlResult *result = this->site->Datafile->ExecuteQuery("SELECT name, downloaded FROM page WHERE wiki = " + QString::number(site->ID) + ";");
+
+    int n = 0;
+    while (n < result->Count())
+    {
+        SwRow page = result->GetRow(n);
+        n++;
+        if (page.GetField(0).toString().isEmpty())
+            continue;
+        WikiPage wp = WikiPage(this->site, page.GetField(0).toString());
+        bool present = Generic::SafeBool(page.GetField(1).toInt());
+        this->InsertPage(wp, present);
+    }
+    this->ui->tableWidget->resizeColumnsToContents();
+    this->ui->tableWidget->resizeRowsToContents();
 }
 
 static void Pages_Finish(Query *query)
@@ -227,6 +255,21 @@ void ImportPages::Enable(bool value)
 {
     this->ui->pushButton->setEnabled(value);
     this->ui->pushButton_2->setEnabled(value);
+    this->busy = !value;
+}
+
+void ImportPages::DownloadNext()
+{
+    this->currentPage++;
+    if (this->currentPage >= this->Downloads.count())
+    {
+        return;
+    }
+    RetrieveQuery *xx = this->Downloads.at(this->currentPage);
+    if (xx->IsProcessed())
+        throw new Smuggle::Exception("This query was already processed", BOOST_CURRENT_FUNCTION);
+
+    xx->Process();
 }
 
 void Smuggle::ImportPages::on_pushButton_3_clicked()
@@ -241,7 +284,42 @@ void Smuggle::ImportPages::on_pushButton_clicked()
     {
         if (this->CheckBoxes[page]->isChecked())
         {
-            WikiTool::DownloadPageFromTitle(this->site, page);
+            this->Downloads.append(WikiTool::DownloadPageFromTitle(this->site, page));
+            this->Downloads.last()->IncRef();
         }
     }
+    this->currentPage = -1;
+    this->DownloadNext();
+    this->t->start(200);
+}
+
+void ImportPages::OnTick()
+{
+    // If there are no more items we are done
+    if (this->currentPage >= this->Downloads.count())
+    {
+        this->t->stop();
+        this->Enable(true);
+        this->Reload();
+        // remove all queries
+        while (this->Downloads.count())
+        {
+            this->Downloads.at(0)->DecRef();
+            this->Downloads.removeAt(0);
+        }
+        return;
+    }
+    // Get a currently scheduled page
+    RetrieveQuery *query = this->Downloads.at(this->currentPage);
+    if (!query->IsProcessed())
+        return;
+
+    if (query->IsFailed())
+    {
+        Syslog::Logs->ErrorLog("Unable to download " + query->PageName() + ": " + query->GetFailureReason());
+        this->DownloadNext();
+        return;
+    }
+    Syslog::Logs->Log("Successfuly downloaded contents for " + query->PageName());
+    this->DownloadNext();
 }

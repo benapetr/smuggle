@@ -16,6 +16,7 @@
 #include <QMainWindow>
 
 class QTimer;
+class QWebView;
 
 namespace Ui
 {
@@ -37,6 +38,7 @@ namespace Smuggle
             explicit MainWindow(QWidget *parent = 0);
             ~MainWindow();
             void RefreshWiki();
+            QWebView *GetBrowser();
             WikiSite *CurrentSite;
         private slots:
             void on_actionOpen_datafile_triggered();

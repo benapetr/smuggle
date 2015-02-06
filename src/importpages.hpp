@@ -23,9 +23,11 @@ namespace Ui
 }
 
 class QCheckBox;
+class QTimer;
 
 namespace Smuggle
 {
+    class RetrieveQuery;
     class WikiSite;
 
     class ImportPages : public QDialog
@@ -37,6 +39,7 @@ namespace Smuggle
             ~ImportPages();
             void InsertPage(WikiPage page, bool present);
             void FinishLoad();
+            void Reload();
             int LastNS;
             QString LastTitle;
             WikiSite *site;
@@ -46,12 +49,16 @@ namespace Smuggle
         private slots:
             void on_pushButton_2_clicked();
             void on_pushButton_3_clicked();
-
             void on_pushButton_clicked();
-
+            void OnTick();
         private:
             void Enable(bool value);
+            void DownloadNext();
+            bool busy;
+            QList<RetrieveQuery*> Downloads;
+            QTimer *t;
             Ui::ImportPages *ui;
+            int currentPage;
     };
 }
 

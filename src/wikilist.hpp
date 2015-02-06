@@ -14,6 +14,7 @@
 #define WIKILIST_HPP
 
 #include <QDockWidget>
+#include <QModelIndex>
 
 namespace Ui
 {
@@ -30,8 +31,10 @@ namespace Smuggle
             ~WikiList();
             void Refresh();
             void SelectWiki(int in);
+            void Open(QString page);
         private slots:
             void on_comboBox_currentIndexChanged(int index);
+            void on_tableWidget_clicked(const QModelIndex &index);
 
         private:
             Ui::WikiList *ui;

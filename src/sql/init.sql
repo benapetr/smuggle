@@ -52,7 +52,7 @@ CREATE INDEX idx_text_revid ON text(revid);
 CREATE TABLE page
 (
     "id" INTEGER PRIMARY KEY,
-    "name" TEXT UNIQUE NOT NULL,
+    "name" TEXT NOT NULL,
     "preferred_rev_id" NUMERIC,
     "latest" NUMERIC,
     "content_model" TEXT,
